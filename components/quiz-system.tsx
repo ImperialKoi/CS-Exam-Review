@@ -14,11 +14,11 @@ export default function QuizSystem() {
   const [userAnswer, setUserAnswer] = useState("")
   const [showFeedback, setShowFeedback] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-  const [usedQuestions, setUsedQuestions] = useState<Set<number>>(new Set())
+  const [usedQuestions, setUsedQuestions] = useState<Set<string>>(new Set())
   const [score, setScore] = useState({ correct: 0, total: 0 })
 
   const getRandomQuestion = () => {
-    const availableQuestions = questions.filter((q) => !usedQuestions.has(q.id))
+    const availableQuestions = questions.filter((q) => !usedQuestions.has(q.question))
 
     if (availableQuestions.length === 0) {
       // Reset if all questions have been used
@@ -35,7 +35,7 @@ export default function QuizSystem() {
     setUserAnswer("")
     setShowFeedback(false)
     setIsCorrect(false)
-    setUsedQuestions((prev) => new Set([...prev, newQuestion.id]))
+    setUsedQuestions((prev) => new Set([...prev, newQuestion.question]))
   }
 
   useEffect(() => {
