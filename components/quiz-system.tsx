@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, XCircle, RotateCcw } from "lucide-react"
 import { Question, questions } from "../data/questions"
+// Import additional icon for "Mark as Correct" button
+import { Check } from "lucide-react" 
 
 export default function QuizSystem() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
@@ -23,10 +25,16 @@ export default function QuizSystem() {
     if (availableQuestions.length === 0) {
       // Reset if all questions have been used
       setUsedQuestions(new Set())
-      return questions[Math.floor(Math.random() * questions.length)]
+      // Ensure we don't pick the same question twice in a row if only one is available after reset
+      if (questions.length === 0) return null; // Handle empty questions array
+      const newQuestion = questions[Math.floor(Math.random() * questions.length)];
+      setUsedQuestions((prev) => new Set([...prev, newQuestion.question])); // Add to used right away
+      return newQuestion;
     }
 
-    return availableQuestions[Math.floor(Math.random() * availableQuestions.length)]
+    const newQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+    setUsedQuestions((prev) => new Set([...prev, newQuestion.question])); // Add to used right away
+    return newQuestion;
   }
 
   const loadNewQuestion = () => {
@@ -35,14 +43,17 @@ export default function QuizSystem() {
     setUserAnswer("")
     setShowFeedback(false)
     setIsCorrect(false)
-    setUsedQuestions((prev) => new Set([...prev, newQuestion.question]))
+    // usedQuestions is updated inside getRandomQuestion now
   }
 
   useEffect(() => {
     loadNewQuestion()
   }, [])
 
-  const checkShortAnswer = (userAnswer: string, correctAnswers: string[]): boolean => {
+  const checkShortAnswer = (userAnswer: string, correctAnswers: string[] | string): boolean => {
+    if (!Array.isArray(correctAnswers)) {
+      correctAnswers = [correctAnswers]
+    }
     const normalizedUserAnswer = userAnswer.toLowerCase().trim()
     return correctAnswers.some(
       (correct) =>
@@ -77,6 +88,19 @@ export default function QuizSystem() {
     setUsedQuestions(new Set())
     setScore({ correct: 0, total: 0 })
     loadNewQuestion()
+  }
+
+  // New handler for manually marking as correct
+  const handleMarkAsCorrect = () => {
+    // Only allow if it was previously marked incorrect and it's a short-answer question
+    if (showFeedback && !isCorrect && currentQuestion?.type === "short-answer") {
+      setIsCorrect(true)
+      // If it was already counted as incorrect, we need to increment correct by 1 without changing total
+      setScore((prev) => ({
+        correct: prev.correct + 1,
+        total: prev.total, // total remains the same as it was already incremented in handleSubmitAnswer
+      }))
+    }
   }
 
   if (!currentQuestion) {
@@ -155,7 +179,7 @@ export default function QuizSystem() {
                     <p className="text-sm text-green-600 mt-1">
                       Correct answer:{" "}
                       {currentQuestion.type === "short-answer"
-                        ? (currentQuestion.correctAnswer as string[])[0]
+                        ? (currentQuestion.correctAnswer as string[])[0] // Show first correct answer
                         : currentQuestion.correctAnswer}
                     </p>
                   )}
@@ -164,6 +188,13 @@ export default function QuizSystem() {
                   )}
                 </div>
               </div>
+
+              {/* Mark as Correct Button */}
+              {showFeedback && !isCorrect && currentQuestion.type === "short-answer" && (
+                <Button onClick={handleMarkAsCorrect} variant="outline" className="w-full">
+                  <Check className="h-4 w-4 mr-2" /> Mark as Correct
+                </Button>
+              )}
 
               <Button onClick={handleNextQuestion} className="w-full">
                 Next Question
