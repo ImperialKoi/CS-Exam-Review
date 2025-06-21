@@ -22,14 +22,12 @@ const questions: Question[] = [
     id: 1,
     type: "true-false",
     question: "The names of classes are case-sensitive.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 2,
     type: "true-false",
     question: "Local variables in different methods of the same class are allowed to have the same name.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -37,7 +35,6 @@ const questions: Question[] = [
     type: "true-false",
     question:
       "When calling a method, the parameters passed must match the number, types, and order of parameters that the method expects in its definition.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -69,7 +66,6 @@ const questions: Question[] = [
     id: 6,
     type: "true-false",
     question: "A class may have more than one constructor.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -88,7 +84,6 @@ const questions: Question[] = [
     type: "true-false",
     question:
       "A subclass inherits all those constructors of its superclass that are not defined explicitly in the subclass.",
-    options: ["True", "False"],
     correctAnswer: "False",
     explanation:
       "You must create your own constructors in your subclass that explicitly call the superclass constructors using the super() keyword.",
@@ -97,7 +92,6 @@ const questions: Question[] = [
     id: 9,
     type: "true-false",
     question: "Inheritance represents the IS-A relationship between objects.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -116,7 +110,6 @@ const questions: Question[] = [
     id: 11,
     type: "true-false",
     question: "An object has to be instantiated before it can be used.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -129,7 +122,6 @@ const questions: Question[] = [
     id: 13,
     type: "true-false",
     question: "The source code for a Java program consists of definitions of classes.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -142,14 +134,12 @@ const questions: Question[] = [
     id: 15,
     type: "true-false",
     question: "A method can return a value to the caller.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 16,
     type: "true-false",
     question: "In the MorphingDice game, each Dice is an object.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -157,7 +147,6 @@ const questions: Question[] = [
     type: "true-false",
     question:
       "A local variable may be initialized in one method or constructor and used in another method or constructor.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -170,7 +159,6 @@ const questions: Question[] = [
     id: 19,
     type: "true-false",
     question: "A Java program is allowed to create only one object of each class.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -189,7 +177,6 @@ const questions: Question[] = [
     id: 21,
     type: "true-false",
     question: "A subclass inherits all the fields and public methods of its superclass.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -222,28 +209,24 @@ const questions: Question[] = [
     id: 24,
     type: "true-false",
     question: "By convention, fields of a class are usually declared private.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 25,
     type: "true-false",
     question: "The programmer gives names to objects in his program by assigning them to variables.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 26,
     type: "true-false",
     question: "Different objects of the same class can have different sets of methods.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
     id: 27,
     type: "true-false",
     question: "In the MorphingDice game, the Game class creates a(n) object(s).",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -268,7 +251,6 @@ const questions: Question[] = [
     id: 30,
     type: "true-false",
     question: "The import statement tells the compiler which other classes use this class.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -305,14 +287,12 @@ const questions: Question[] = [
     id: 35,
     type: "true-false",
     question: "Every class has a method called main.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
     id: 36,
     type: "true-false",
     question: "When an object is created, the program always calls its init method.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -325,14 +305,12 @@ const questions: Question[] = [
     id: 38,
     type: "true-false",
     question: "Can int expressions be used in a switch?",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 39,
     type: "true-false",
     question: "When an (int) cast is applied to a double value, it rounds the value to the nearest integer.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -399,14 +377,12 @@ const questions: Question[] = [
     id: 48,
     type: "true-false",
     question: "The % operator has the same rank as the / operator.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 49,
     type: "true-false",
     question: "Can double expressions be used in a switch?",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -425,7 +401,6 @@ const questions: Question[] = [
     id: 51,
     type: "true-false",
     question: "The \\n character is not allowed in literal strings.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -438,7 +413,6 @@ const questions: Question[] = [
     id: 53,
     type: "true-false",
     question: "The \\n character is allowed in literal strings.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -488,7 +462,6 @@ const questions: Question[] = [
     id: 60,
     type: "true-false",
     question: "Literal strings are not objects of the String type.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -503,14 +476,12 @@ const questions: Question[] = [
     id: 62,
     type: "true-false",
     question: 'An empty string is represented either as "" or as a null reference.',
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
     id: 63,
     type: "true-false",
     question: "double and float are two different names for the same Java data type.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -536,14 +507,12 @@ const questions: Question[] = [
     id: 66,
     type: "true-false",
     question: 'Literal strings can include \\n and \\t "escape" characters.',
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 67,
     type: "true-false",
     question: "Literal strings are objects of the String type.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -585,14 +554,12 @@ const questions: Question[] = [
     type: "true-false",
     question:
       "When an algorithm is implemented on a computer, it always takes the same time to execute, regardless of its input.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
     id: 73,
     type: "true-false",
     question: "If the code reaches a for loop, it goes through the body of the loop at least once.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -621,7 +588,6 @@ const questions: Question[] = [
     id: 77,
     type: "true-false",
     question: "The same algorithm can be implemented in different programming languages.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -640,7 +606,6 @@ const questions: Question[] = [
     id: 80,
     type: "true-false",
     question: "An algorithm always takes one parameter n as input.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -654,14 +619,12 @@ const questions: Question[] = [
     id: 82,
     type: "true-false",
     question: "Flow charts and pseudocode are used to describe and teach algorithms.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 83,
     type: "true-false",
     question: "If break is used inside the body of a loop (not a switch), it should be inside an if-else statement.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -681,7 +644,6 @@ const questions: Question[] = [
     id: 85,
     type: "true-false",
     question: "A break can be used in while and for loops, but not in do-while loops.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -694,7 +656,6 @@ const questions: Question[] = [
     id: 87,
     type: "true-false",
     question: "In nested loops, break in any of them passes control to the first statement after the outermost loop.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -714,7 +675,6 @@ const questions: Question[] = [
     id: 90,
     type: "true-false",
     question: "An algorithm always produces one number as output.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -769,7 +729,6 @@ const questions: Question[] = [
     type: "true-false",
     question:
       "Iterations fold the description of long computations into a limited number of steps, regardless of the size of the task.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -794,7 +753,6 @@ const questions: Question[] = [
     id: 101,
     type: "true-false",
     question: 'You cannot call a literal string\'s methods, as in "Hello".equals(str).',
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -826,7 +784,6 @@ System.out.println(str1 + str2);`,
     id: 104,
     type: "true-false",
     question: "append is a method in the StringBuffer class.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -841,14 +798,12 @@ System.out.println(str1 + str2);`,
     id: 106,
     type: "true-false",
     question: 'You can call a literal string\'s methods, as in "Hello".equals(str).',
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
     id: 107,
     type: "true-false",
     question: "The length method returns 0 for an empty string.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -868,7 +823,6 @@ what is returned by word2.compareTo(word1)?`,
     id: 109,
     type: "true-false",
     question: "The Character class contains the static method boolean isUpperCase(char ch).",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -895,7 +849,6 @@ what is returned by word2.compareTo(word1)?`,
     id: 112,
     type: "true-false",
     question: "The length method returns null for an empty string.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -914,7 +867,6 @@ what is returned by word2.compareTo(word1)?`,
     id: 114,
     type: "true-false",
     question: "A StringBuffer, once constructed, cannot be changed.",
-    options: ["True", "False"],
     correctAnswer: "False",
   },
   {
@@ -933,7 +885,6 @@ what is returned by word2.compareTo(word1)?`,
     id: 116,
     type: "true-false",
     question: "A string, once constructed, cannot be changed.",
-    options: ["True", "False"],
     correctAnswer: "True",
   },
   {
@@ -1049,7 +1000,7 @@ export default function QuizSystem() {
             <>
               {currentQuestion.type === "multiple-choice" || currentQuestion.type === "true-false" ? (
                 <RadioGroup value={userAnswer} onValueChange={setUserAnswer}>
-                  {currentQuestion.options?.map((option, index) => (
+                  {(currentQuestion.options ?? ["True", "False"]).map((option, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <RadioGroupItem value={option} id={`option-${index}`} />
                       <Label htmlFor={`option-${index}`} className="cursor-pointer">
