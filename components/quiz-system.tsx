@@ -52,7 +52,7 @@ export default function QuizSystem() {
 
   const checkShortAnswer = (userAnswer: string, correctAnswers: string[] | string): boolean => {
     if (!Array.isArray(correctAnswers)) {
-      correctAnswers = [correctAnswers]
+      correctAnswers = Array.of(correctAnswers)
     }
     const normalizedUserAnswer = userAnswer.toLowerCase().trim()
     return correctAnswers.some(
@@ -67,7 +67,7 @@ export default function QuizSystem() {
     let correct = false
 
     if (currentQuestion.type === "short-answer") {
-      correct = checkShortAnswer(userAnswer, currentQuestion.correctAnswer as string[])
+      correct = checkShortAnswer(userAnswer, currentQuestion.correctAnswer)
     } else {
       correct = userAnswer === currentQuestion.correctAnswer
     }
@@ -126,7 +126,7 @@ export default function QuizSystem() {
           <CardDescription>Answer the question below</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-lg">{currentQuestion.question}</p>
+          <p className="text-lg" style={{ whiteSpace: "pre-wrap" }}>{currentQuestion.question}</p>
 
           {!showFeedback && (
             <>
@@ -179,7 +179,7 @@ export default function QuizSystem() {
                     <p className="text-sm text-green-600 mt-1">
                       Correct answer:{" "}
                       {currentQuestion.type === "short-answer"
-                        ? (currentQuestion.correctAnswer as string[])[0] // Show first correct answer
+                        ? (Array.isArray(currentQuestion.correctAnswer) ? currentQuestion.correctAnswer[0] : currentQuestion.correctAnswer) // Show first correct answer
                         : currentQuestion.correctAnswer}
                     </p>
                   )}

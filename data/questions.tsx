@@ -382,7 +382,7 @@ export const questions = [
     type: "short-answer",
     question:
       "There are two syntax errors in the code below. For each error, write the corrected line:\n\npublic class RightTriangle {\n  private double aSide; bSide;\n  public double getAltitude() {\n    private double hypotenuse;\n    hypotenuse = Math.sqrt(aSide * aSide + bSide * bSide);\n    return aSide * bSide / hypotenuse;\n  }\n}",
-    correctAnswer: ["private double aSide, bSide;", "double hypotenuse;"],
+    correctAnswer: ["private double aSide, bSide;\ndouble hypotenuse;"],
   },
   {
     type: "short-answer",
