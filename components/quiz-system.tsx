@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, XCircle, RotateCcw } from "lucide-react"
-import { Question, questions } from "../data/questions"
-// Import additional icon for "Mark as Correct" button
-import { Check } from "lucide-react" 
+import { CheckCircle, XCircle, RotateCcw, BookOpen, Trophy, Target, Check, Loader2 } from "lucide-react"
+import { type Question, questions } from "../data/questions"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 
 interface GeminiResponse {
   isCorrect: boolean
@@ -31,18 +31,16 @@ export default function QuizSystem() {
     const availableQuestions = questions.filter((q) => !usedQuestions.has(q.question))
 
     if (availableQuestions.length === 0) {
-      // Reset if all questions have been used
       setUsedQuestions(new Set())
-      // Ensure we don't pick the same question twice in a row if only one is available after reset
-      if (questions.length === 0) return null; // Handle empty questions array
-      const newQuestion = questions[Math.floor(Math.random() * questions.length)];
-      setUsedQuestions((prev) => new Set([...prev, newQuestion.question])); // Add to used right away
-      return newQuestion;
+      if (questions.length === 0) return null
+      const newQuestion = questions[Math.floor(Math.random() * questions.length)]
+      setUsedQuestions((prev) => new Set([...prev, newQuestion.question]))
+      return newQuestion
     }
 
-    const newQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-    setUsedQuestions((prev) => new Set([...prev, newQuestion.question])); // Add to used right away
-    return newQuestion;
+    const newQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)]
+    setUsedQuestions((prev) => new Set([...prev, newQuestion.question]))
+    return newQuestion
   }
 
   const loadNewQuestion = () => {
@@ -52,7 +50,6 @@ export default function QuizSystem() {
     setShowFeedback(false)
     setIsCorrect(false)
     setGeminiResponse(null)
-    // usedQuestions is updated inside getRandomQuestion now
   }
 
   useEffect(() => {
@@ -90,7 +87,6 @@ export default function QuizSystem() {
       return await response.json()
     } catch (error) {
       console.error("Error checking answer with Gemini:", error)
-      // Fallback to local checking
       return {
         isCorrect: false,
         correctAnswer: "Unable to verify answer. Please try again.",
@@ -112,7 +108,6 @@ export default function QuizSystem() {
         correct = geminiResult.isCorrect
         setGeminiResponse(geminiResult)
       } catch (error) {
-        // Fallback to local checking
         correct = checkShortAnswer(userAnswer, currentQuestion.correctAnswer as string[])
       }
       setIsCheckingAnswer(false)
@@ -138,119 +133,237 @@ export default function QuizSystem() {
     loadNewQuestion()
   }
 
-  // New handler for manually marking as correct
   const handleMarkAsCorrect = () => {
-    // Only allow if it was previously marked incorrect and it's a short-answer question
     if (showFeedback && !isCorrect && currentQuestion?.type === "short-answer") {
       setIsCorrect(true)
-      // If it was already counted as incorrect, we need to increment correct by 1 without changing total
       setScore((prev) => ({
         correct: prev.correct + 1,
-        total: prev.total, // total remains the same as it was already incremented in handleSubmitAnswer
+        total: prev.total,
       }))
     }
   }
 
+  const getQuestionTypeIcon = (type: string) => {
+    switch (type) {
+      case "multiple-choice":
+        return <Target className="h-4 w-4" />
+      case "true-false":
+        return <CheckCircle className="h-4 w-4" />
+      case "short-answer":
+        return <BookOpen className="h-4 w-4" />
+      default:
+        return <BookOpen className="h-4 w-4" />
+    }
+  }
+
+  const getQuestionTypeLabel = (type: string) => {
+    switch (type) {
+      case "multiple-choice":
+        return "Multiple Choice"
+      case "true-false":
+        return "True/False"
+      case "short-answer":
+        return "Short Answer"
+      default:
+        return "Question"
+    }
+  }
+
+  const getScoreColor = () => {
+    if (score.total === 0) return "text-gray-600"
+    const percentage = (score.correct / score.total) * 100
+    if (percentage >= 80) return "text-green-600"
+    if (percentage >= 60) return "text-yellow-600"
+    return "text-red-600"
+  }
+
+  const getProgressPercentage = () => {
+    if (score.total === 0) return 0
+    return (score.correct / score.total) * 100
+  }
+
   if (!currentQuestion) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading your next question...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-muted-foreground">
-          Score: {score.correct}/{score.total} ({score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}
-          %)
+    <div className="min-h-screen p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 pt-8">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Trophy className="h-8 w-8 text-blue-600" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              CS Exam Review
+            </h1>
+          </div>
+          <p className="text-gray-600 text-lg">Master your Java programming concepts</p>
         </div>
-        <Button variant="outline" size="sm" onClick={resetQuiz}>
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Reset
-        </Button>
-      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Java Quiz Question</CardTitle>
-          <CardDescription>Answer the question below</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-lg" style={{ whiteSpace: "pre-wrap" }}>{currentQuestion.question}</p>
-
-          {!showFeedback && (
-            <>
-              {currentQuestion.type === "multiple-choice" || currentQuestion.type === "true-false" ? (
-                <RadioGroup value={userAnswer} onValueChange={setUserAnswer}>
-                  {(currentQuestion.options ?? ["True", "False"]).map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={`option-${index}`} />
-                      <Label htmlFor={`option-${index}`} className="cursor-pointer">
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              ) : (
-                <Textarea
-                  placeholder="Enter your answer here..."
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  className="min-h-[100px]"
-                />
-              )}
-
-              <Button onClick={handleSubmitAnswer} disabled={!userAnswer.trim()} className="w-full">
-                Submit Answer
-              </Button>
-            </>
-          )}
-
-          {showFeedback && (
-            <div className="space-y-4">
-              <div
-                className={`flex items-center gap-3 p-4 rounded-lg ${
-                  isCorrect ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"
-                }`}
-              >
-                {isCorrect ? (
-                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
-                ) : (
-                  <XCircle className="h-6 w-6 text-red-500 flex-shrink-0" />
-                )}
-                <div className="flex-1">
-                  <p className={`font-medium ${isCorrect ? "text-green-800" : "text-red-800"}`}>
-                    {isCorrect ? "Correct!" : "Incorrect"}
-                  </p>
-                  <p className={`text-sm ${isCorrect ? "text-green-600" : "text-red-600"}`}>
-                    Your answer: {userAnswer}
-                  </p>
-                  {!isCorrect && (
-                    <p className="text-sm text-green-600 mt-1">
-                      Correct answer:{" "}
-                      {currentQuestion.type === "short-answer"
-                        ? (Array.isArray(currentQuestion.correctAnswer) ? currentQuestion.correctAnswer[0] : currentQuestion.correctAnswer) // Show first correct answer
-                        : currentQuestion.correctAnswer}
-                    </p>
-                  )}
-                  {currentQuestion.explanation && (
-                    <p className="text-sm text-blue-600 mt-2">{currentQuestion.explanation}</p>
-                  )}
+        {/* Score Card */}
+        <Card className="mb-6 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="text-center">
+                  <div className={`text-3xl font-bold ${getScoreColor()}`}>
+                    {score.correct}/{score.total}
+                  </div>
+                  <div className="text-sm text-gray-500">Score</div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-3xl font-bold ${getScoreColor()}`}>
+                    {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-500">Accuracy</div>
                 </div>
               </div>
-
-              {/* Mark as Correct Button */}
-              {showFeedback && !isCorrect && currentQuestion.type === "short-answer" && (
-                <Button onClick={handleMarkAsCorrect} variant="outline" className="w-full">
-                  <Check className="h-4 w-4 mr-2" /> Mark as Correct
-                </Button>
-              )}
-
-              <Button onClick={handleNextQuestion} className="w-full">
-                Next Question
+              <Button variant="outline" onClick={resetQuiz} className="gap-2">
+                <RotateCcw className="h-4 w-4" />
+                Reset Quiz
               </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <Progress value={getProgressPercentage()} className="h-2" />
+          </CardContent>
+        </Card>
+
+        {/* Question Card */}
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between mb-2">
+              <Badge variant="secondary" className="gap-1">
+                {getQuestionTypeIcon(currentQuestion.type)}
+                {getQuestionTypeLabel(currentQuestion.type)}
+              </Badge>
+              <div className="text-sm text-gray-500">Question {score.total + 1}</div>
+            </div>
+            <CardTitle className="text-xl leading-relaxed">{currentQuestion.question}</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {!showFeedback && (
+              <>
+                {currentQuestion.type === "multiple-choice" || currentQuestion.type === "true-false" ? (
+                  <RadioGroup value={userAnswer} onValueChange={setUserAnswer} className="space-y-3">
+                    {(currentQuestion.options ?? ["True", "False"]).map((option, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <RadioGroupItem value={option} id={`option-${index}`} />
+                        <Label htmlFor={`option-${index}`} className="cursor-pointer flex-1 text-base">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="answer-input" className="text-base font-medium">
+                      Your Answer:
+                    </Label>
+                    <Textarea
+                      id="answer-input"
+                      placeholder="Type your answer here..."
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      className="min-h-[120px] text-base resize-none"
+                    />
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmitAnswer}
+                  disabled={!userAnswer.trim() || isCheckingAnswer}
+                  className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  {isCheckingAnswer ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Checking Answer...
+                    </>
+                  ) : (
+                    "Submit Answer"
+                  )}
+                </Button>
+              </>
+            )}
+
+            {showFeedback && (
+              <div className="space-y-6">
+                <div
+                  className={`p-6 rounded-xl border-2 ${
+                    isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    {isCorrect ? (
+                      <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
+                    ) : (
+                      <XCircle className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
+                    )}
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <p className={`font-semibold text-lg ${isCorrect ? "text-green-800" : "text-red-800"}`}>
+                          {isCorrect ? "Correct! Well done!" : "Not quite right"}
+                        </p>
+                        <p className={`text-sm ${isCorrect ? "text-green-700" : "text-red-700"}`}>
+                          <span className="font-medium">Your answer:</span> {userAnswer}
+                        </p>
+                      </div>
+
+                      {!isCorrect && (
+                        <div className="p-3 bg-white/60 rounded-lg">
+                          <p className="text-sm font-medium text-green-800 mb-1">Correct answer:</p>
+                          <p className="text-sm text-green-700">
+                            {currentQuestion.type === "short-answer"
+                              ? Array.isArray(currentQuestion.correctAnswer)
+                                ? currentQuestion.correctAnswer[0]
+                                : currentQuestion.correctAnswer
+                              : currentQuestion.correctAnswer}
+                          </p>
+                        </div>
+                      )}
+
+                      {currentQuestion.explanation && (
+                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm font-medium text-blue-800 mb-1">Explanation:</p>
+                          <p className="text-sm text-blue-700">{currentQuestion.explanation}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {showFeedback && !isCorrect && currentQuestion.type === "short-answer" && (
+                  <Button
+                    onClick={handleMarkAsCorrect}
+                    variant="outline"
+                    className="w-full gap-2 border-green-200 text-green-700 hover:bg-green-50"
+                  >
+                    <Check className="h-4 w-4" />
+                    Mark as Correct
+                  </Button>
+                )}
+
+                <Button
+                  onClick={handleNextQuestion}
+                  className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  Next Question
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
