@@ -11,6 +11,12 @@ import { Question, questions } from "../data/questions"
 // Import additional icon for "Mark as Correct" button
 import { Check } from "lucide-react" 
 
+interface GeminiResponse {
+  isCorrect: boolean
+  correctAnswer?: string
+  explanation?: string
+}
+
 export default function QuizSystem() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
   const [userAnswer, setUserAnswer] = useState("")
@@ -18,6 +24,8 @@ export default function QuizSystem() {
   const [isCorrect, setIsCorrect] = useState(false)
   const [usedQuestions, setUsedQuestions] = useState<Set<string>>(new Set())
   const [score, setScore] = useState({ correct: 0, total: 0 })
+  const [isCheckingAnswer, setIsCheckingAnswer] = useState(false)
+  const [geminiResponse, setGeminiResponse] = useState<GeminiResponse | null>(null)
 
   const getRandomQuestion = () => {
     const availableQuestions = questions.filter((q) => !usedQuestions.has(q.question))
@@ -43,6 +51,7 @@ export default function QuizSystem() {
     setUserAnswer("")
     setShowFeedback(false)
     setIsCorrect(false)
+    setGeminiResponse(null)
     // usedQuestions is updated inside getRandomQuestion now
   }
 
@@ -61,13 +70,52 @@ export default function QuizSystem() {
     )
   }
 
-  const handleSubmitAnswer = () => {
+  const checkWithGemini = async (question: string, userAnswer: string): Promise<GeminiResponse> => {
+    try {
+      const response = await fetch("/api/check-answer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question,
+          userAnswer,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to check answer with Gemini")
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error("Error checking answer with Gemini:", error)
+      // Fallback to local checking
+      return {
+        isCorrect: false,
+        correctAnswer: "Unable to verify answer. Please try again.",
+        explanation: "There was an error checking your answer.",
+      }
+    }
+  }
+
+  const handleSubmitAnswer = async () => {
     if (!currentQuestion || !userAnswer.trim()) return
 
     let correct = false
+    let geminiResult: GeminiResponse | null = null
 
     if (currentQuestion.type === "short-answer") {
-      correct = checkShortAnswer(userAnswer, currentQuestion.correctAnswer)
+      setIsCheckingAnswer(true)
+      try {
+        geminiResult = await checkWithGemini(currentQuestion.question, userAnswer)
+        correct = geminiResult.isCorrect
+        setGeminiResponse(geminiResult)
+      } catch (error) {
+        // Fallback to local checking
+        correct = checkShortAnswer(userAnswer, currentQuestion.correctAnswer as string[])
+      }
+      setIsCheckingAnswer(false)
     } else {
       correct = userAnswer === currentQuestion.correctAnswer
     }
