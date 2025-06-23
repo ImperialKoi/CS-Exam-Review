@@ -1225,7 +1225,7 @@ export const questions = [
   },
   {
     type: "short-answer",
-    question: "Find three syntax errors in the code below. For each one, type out the entire corrected line in the answer box.\n```java\ndouble sum = 0.0\nint i;\nfor (i = 0; i < 1000; i++)\n{\n  sum == sum + i * i;\n}\nSystem.out.println(Math.round(sum / 1000));\n```",
+    question: "Find three syntax errors in the code below. For each one, type out the entire corrected line in the answer box.\n```java\ndouble sum = 0.0\nint i;\nfor (i = 0; i < 1000; i++)\n{\n  sum == sum + i * i;\n}\nSystem.out.println(Math.round(sum / 1000))\n```",
     correctAnswer: [
       "double sum = 0.0;",
       "sum = sum + i * i;",
