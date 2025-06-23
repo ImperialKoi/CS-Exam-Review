@@ -6,7 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, XCircle, RotateCcw, BookOpen, Trophy, Target, Check, Loader2, X } from "lucide-react"
+import {
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  Trophy,
+  Target,
+  Check,
+  Loader2,
+  X,
+  Star,
+  Zap,
+  Award,
+  Code,
+  Terminal,
+  Cpu,
+} from "lucide-react"
 import { type Question, questions } from "../data/questions"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -215,31 +230,31 @@ export default function QuizSystem() {
       case "true-false":
         return <CheckCircle className="h-4 w-4" />
       case "short-answer":
-        return <BookOpen className="h-4 w-4" />
+        return <Terminal className="h-4 w-4" />
       default:
-        return <BookOpen className="h-4 w-4" />
+        return <Code className="h-4 w-4" />
     }
   }
 
   const getQuestionTypeLabel = (type: string) => {
     switch (type) {
       case "multiple-choice":
-        return "Multiple Choice"
+        return "MULTIPLE_CHOICE"
       case "true-false":
-        return "True/False"
+        return "BOOLEAN_LOGIC"
       case "short-answer":
-        return "Short Answer"
+        return "CODE_INPUT"
       default:
-        return "Question"
+        return "QUERY"
     }
   }
 
   const getScoreColor = () => {
-    if (score.total === 0) return "text-gray-600"
+    if (score.total === 0) return "text-gray-400"
     const percentage = (score.correct / score.total) * 100
-    if (percentage >= 80) return "text-green-600"
-    if (percentage >= 60) return "text-yellow-600"
-    return "text-red-600"
+    if (percentage >= 80) return "text-green-400"
+    if (percentage >= 60) return "text-yellow-400"
+    return "text-red-400"
   }
 
   const getProgressPercentage = () => {
@@ -249,337 +264,431 @@ export default function QuizSystem() {
 
   if (!currentQuestion) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-gray-600">Loading your next question...</p>
+      <div className="min-h-screen bg-black flex justify-center items-center relative overflow-hidden">
+        {/* Cyber grid background */}
+        <div className="absolute inset-0 bg-cyber-grid opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
+
+        <div className="text-center relative z-10">
+          <div className="relative">
+            <div className="absolute inset-0 bg-cyan-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <Loader2 className="relative h-16 w-16 animate-spin mx-auto mb-6 text-cyan-400" />
+          </div>
+          <div className="cyber-text text-xl font-mono">LOADING_NEXT_QUERY...</div>
+          <div className="mt-2 text-gray-500 font-mono text-sm">INITIALIZING</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8 pt-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              CS Exam Review
-            </h1>
-          </div>
-          <p className="text-gray-600 text-lg">Master your Java programming concepts</p>
-          {isNameSet && (
-            <div className="flex items-center justify-center gap-4 mt-4">
-              <div className="text-sm text-gray-600">
-                Welcome back, <span className="font-semibold">{userName}</span>!
-              </div>
-              <Button variant="outline" size="sm" onClick={() => setShowLeaderboard(true)} className="gap-2">
-                <Trophy className="h-4 w-4" />
-                Leaderboard
-              </Button>
-            </div>
-          )}
-        </div>
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Cyber background elements */}
+      <div className="absolute inset-0 bg-cyber-grid opacity-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5"></div>
 
-        {/* Score Card */}
-        <Card className="mb-6 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <div className="text-center">
-                  <div className={`text-3xl font-bold ${getScoreColor()}`}>
-                    {score.correct}/{score.total}
-                  </div>
-                  <div className="text-sm text-gray-500">Score</div>
-                </div>
-                <div className="text-center">
-                  <div className={`text-3xl font-bold ${getScoreColor()}`}>
-                    {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
-                  </div>
-                  <div className="text-sm text-gray-500">Accuracy</div>
-                </div>
-              </div>
-              <Button variant="outline" onClick={resetQuiz} className="gap-2">
-                <RotateCcw className="h-4 w-4" />
-                Reset Quiz
-              </Button>
-            </div>
-            <Progress value={getProgressPercentage()} className="h-2" />
-          </CardContent>
-        </Card>
+      {/* Animated neon lines */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse animation-delay-1000"></div>
+      <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-green-400 to-transparent animate-pulse animation-delay-2000"></div>
+      <div className="absolute right-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-pink-400 to-transparent animate-pulse animation-delay-3000"></div>
 
-        {/* Name Input Dialog */}
-        {!isNameSet && (
-          <Card className="mb-6 border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-center">Welcome to CS Exam Review!</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center text-gray-600">Enter your name to track your progress on the leaderboard</div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Enter your name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" && userName.trim()) {
-                      setIsNameSet(true)
-                    }
-                  }}
-                />
-                <Button onClick={() => setIsNameSet(true)} disabled={!userName.trim()}>
-                  Start Quiz
-                </Button>
+      {/* Floating cyber elements */}
+      <div className="absolute top-20 left-20 w-2 h-2 bg-cyan-400 rounded-full animate-ping"></div>
+      <div className="absolute top-40 right-32 w-1 h-1 bg-green-400 rounded-full animate-ping animation-delay-1000"></div>
+      <div className="absolute bottom-32 left-40 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping animation-delay-2000"></div>
+      <div className="absolute bottom-20 right-20 w-2 h-2 bg-pink-400 rounded-full animate-ping animation-delay-3000"></div>
+
+      <div className="relative z-10 p-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8 pt-8">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="relative">
+                <Cpu className="h-12 w-12 text-cyan-400 drop-shadow-lg animate-pulse" />
+                <div className="absolute inset-0 bg-cyan-400 rounded-full blur-lg opacity-50"></div>
               </div>
-              <div className="text-center">
+              <div className="relative">
+                <h1 className="text-6xl font-bold font-mono bg-gradient-to-r from-cyan-400 via-green-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg cyber-glow">
+                  CS_EXAM_REVIEW
+                </h1>
+                <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+              </div>
+              <div className="relative">
+                <Zap className="h-12 w-12 text-purple-400 drop-shadow-lg animate-pulse animation-delay-1000" />
+                <div className="absolute inset-0 bg-purple-400 rounded-full blur-lg opacity-50"></div>
+              </div>
+            </div>
+            <div className="cyber-text text-xl mb-2">JAVA_PROGRAMMING_PROTOCOL</div>
+            {isNameSet && (
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <div className="cyber-panel px-6 py-3">
+                  <span className="text-gray-400 font-mono">USER: </span>
+                  <span className="text-cyan-400 font-mono font-bold">{userName}</span>
+                  <span className="text-green-400 font-mono"> [ONLINE]</span>
+                </div>
                 <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setIsNameSet(true)
-                    setUserName("Anonymous")
-                  }}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowLeaderboard(true)}
+                  className="cyber-button gap-2"
                 >
-                  Continue as Guest
+                  <Trophy className="h-4 w-4 text-yellow-400" />
+                  <span className="font-mono">RANKINGS</span>
                 </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Score Card */}
+          <Card className="mb-8 cyber-card">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-12">
+                  <div className="text-center">
+                    <div className={`text-5xl font-bold font-mono ${getScoreColor()} cyber-glow`}>
+                      {score.correct}/{score.total}
+                    </div>
+                    <div className="text-sm text-gray-400 font-mono mt-1">SCORE_RATIO</div>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-5xl font-bold font-mono ${getScoreColor()} cyber-glow`}>
+                      {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+                    </div>
+                    <div className="text-sm text-gray-400 font-mono mt-1">ACCURACY_RATE</div>
+                  </div>
+                  {score.total > 0 && (
+                    <div className="flex gap-1">
+                      {Array.from({ length: Math.min(5, Math.floor((score.correct / score.total) * 5)) }).map(
+                        (_, i) => (
+                          <Star key={i} className="h-6 w-6 text-yellow-400 fill-current cyber-glow animate-pulse" />
+                        ),
+                      )}
+                    </div>
+                  )}
+                </div>
+                <Button onClick={resetQuiz} className="cyber-button gap-2">
+                  <RotateCcw className="h-4 w-4" />
+                  <span className="font-mono">RESET_SYSTEM</span>
+                </Button>
+              </div>
+              <div className="relative">
+                <Progress value={getProgressPercentage()} className="h-4 bg-gray-800 cyber-progress" />
               </div>
             </CardContent>
           </Card>
-        )}
 
-        {/* Leaderboard Modal */}
-        {showLeaderboard && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-6 w-6 text-yellow-500" />
-                    Leaderboard
-                  </CardTitle>
-                  <Button variant="ghost" size="sm" onClick={() => setShowLeaderboard(false)}>
-                    <X className="h-4 w-4" />
+          {/* Name Input Dialog */}
+          {!isNameSet && (
+            <Card className="mb-8 cyber-card">
+              <CardHeader>
+                <CardTitle className="text-center text-2xl font-mono text-cyan-400 cyber-glow">
+                  SYSTEM_INITIALIZATION
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center text-gray-300 font-mono">ENTER_USER_IDENTIFIER</div>
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="USER_IDENTIFIER"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && userName.trim()) {
+                        setIsNameSet(true)
+                      }
+                    }}
+                    className="cyber-input font-mono"
+                  />
+                  <Button
+                    onClick={() => setIsNameSet(true)}
+                    disabled={!userName.trim()}
+                    className="cyber-button-primary font-mono"
+                  >
+                    INITIALIZE
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent className="overflow-y-auto">
-                <div className="space-y-4">
-                  {/* Stats Legend */}
-                  <div className="bg-blue-50 p-3 rounded-lg text-sm">
-                    <div className="font-medium text-blue-800 mb-2">Ranking System:</div>
-                    <div className="text-blue-700 space-y-1">
-                      <div>
-                        • <strong>Primary:</strong> Most Correct Answers
-                      </div>
-                      <div>
-                        • <strong>Secondary:</strong> Highest Accuracy Rate
-                      </div>
-                      <div>
-                        • <strong>Tertiary:</strong> Most Questions Answered
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Leaderboard List */}
-                  <div className="space-y-2">
-                    {getLeaderboardData().map((user: any, index: number) => (
-                      <div
-                        key={user.name}
-                        className={`p-4 rounded-lg border-2 ${
-                          user.name === userName ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                                index === 0
-                                  ? "bg-yellow-500 text-white"
-                                  : index === 1
-                                    ? "bg-gray-400 text-white"
-                                    : index === 2
-                                      ? "bg-amber-600 text-white"
-                                      : "bg-gray-200 text-gray-700"
-                              }`}
-                            >
-                              {index + 1}
-                            </div>
-                            <div>
-                              <div className="font-semibold">{user.name}</div>
-                              <div className="text-sm text-gray-500">
-                                Last active: {new Date(user.lastUpdated).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="grid grid-cols-3 gap-4 text-sm">
-                              <div className="text-center">
-                                <div className="font-bold text-green-600">{user.correctAnswers}</div>
-                                <div className="text-gray-500">Correct</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="font-bold text-blue-600">{user.questionsAnswered}</div>
-                                <div className="text-gray-500">Total</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="font-bold text-purple-600">{user.accuracyRate}%</div>
-                                <div className="text-gray-500">Accuracy</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {getLeaderboardData().length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        No stats recorded yet. Complete some questions to appear on the leaderboard!
-                      </div>
-                    )}
-                  </div>
+                <div className="text-center">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setIsNameSet(true)
+                      setUserName("ANONYMOUS_USER")
+                    }}
+                    className="text-gray-500 hover:text-black font-mono text-sm"
+                  >
+                    CONTINUE_AS_GUEST
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          )}
 
-        {/* Question Card */}
-        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <Badge variant="secondary" className="gap-1">
-                {getQuestionTypeIcon(currentQuestion.type)}
-                {getQuestionTypeLabel(currentQuestion.type)}
-              </Badge>
-              <div className="text-sm text-gray-500">Question {score.total + 1}</div>
-            </div>
-            <CardTitle className="text-l leading-relaxed" style={{ whiteSpace: "pre-line" }}>
-              {currentQuestion.question}
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            {!showFeedback && (
-              <>
-                {currentQuestion.type === "multiple-choice" || currentQuestion.type === "true-false" ? (
-                  <RadioGroup value={userAnswer} onValueChange={setUserAnswer} className="space-y-3">
-                    {(currentQuestion.options ?? ["True", "False"]).map((option, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <RadioGroupItem value={option} id={`option-${index}`} />
-                        <Label htmlFor={`option-${index}`} className="cursor-pointer flex-1 text-base">
-                          {option}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                ) : (
-                  <div className="space-y-2">
-                    <Label htmlFor="answer-input" className="text-base font-medium">
-                      Your Answer:
-                    </Label>
-                    <Textarea
-                      id="answer-input"
-                      placeholder="Type your answer here..."
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      className="min-h-[120px] text-base resize-none"
-                    />
+          {/* Leaderboard Modal */}
+          {showLeaderboard && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-3xl max-h-[85vh] overflow-hidden cyber-card">
+                <CardHeader className="pb-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-3 text-2xl font-mono text-yellow-400 cyber-glow">
+                      <Trophy className="h-8 w-8" />
+                        RANKINGS
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowLeaderboard(false)}
+                      className="hover:bg-gray-800 rounded-full text-gray-400 hover:text-white"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
                   </div>
-                )}
-
-                <Button
-                  onClick={handleSubmitAnswer}
-                  disabled={!userAnswer.trim() || isCheckingAnswer}
-                  className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  {isCheckingAnswer ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Checking Answer...
-                    </>
-                  ) : (
-                    "Submit Answer"
-                  )}
-                </Button>
-              </>
-            )}
-
-            {showFeedback && (
-              <div className="space-y-6">
-                <div
-                  className={`p-6 rounded-xl border-2 ${
-                    isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    {isCorrect ? (
-                      <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                    ) : (
-                      <XCircle className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
-                    )}
-                    <div className="flex-1 space-y-3">
-                      <div>
-                        <p className={`font-semibold text-lg ${isCorrect ? "text-green-800" : "text-red-800"}`}>
-                          {isCorrect ? "Correct! Well done!" : "Not quite right"}
-                        </p>
-                        <p className={`text-sm ${isCorrect ? "text-green-700" : "text-red-700"}`}>
-                          <span className="font-medium">Your answer:</span> {userAnswer}
-                        </p>
+                </CardHeader>
+                <CardContent className="overflow-y-auto">
+                  <div className="space-y-6">
+                    {/* Stats Legend */}
+                    <div className="cyber-panel p-4">
+                      <div className="font-bold text-cyan-400 mb-3 flex items-center gap-2 font-mono">
+                        <Award className="h-5 w-5" />
+                        RANKING_ALGORITHM:
                       </div>
+                      <div className="text-gray-300 space-y-2 text-sm font-mono">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                          PRIMARY: CORRECT_ANSWERS_COUNT
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse animation-delay-500"></div>
+                          SECONDARY: ACCURACY_PERCENTAGE
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse animation-delay-1000"></div>
+                          TERTIARY: TOTAL_QUERIES_PROCESSED
+                        </div>
+                      </div>
+                    </div>
 
-                      {/* START: MODIFIED SECTION */}
-                      {!isCorrect && (
-                        <div className="p-3 bg-white/60 rounded-lg">
-                          <p className="text-sm font-medium text-green-800 mb-1">Suggested Answer:</p>
-                          <p className="text-sm text-green-700">
-                            {geminiResponse?.correctAnswer // Use Gemini's answer if available
-                              ? geminiResponse.correctAnswer
-                              : currentQuestion.type === "short-answer" // Fallback to static answer
-                                ? Array.isArray(currentQuestion.correctAnswer)
-                                  ? currentQuestion.correctAnswer[0]
-                                  : currentQuestion.correctAnswer
-                                : currentQuestion.correctAnswer}
-                          </p>
+                    {/* Leaderboard List */}
+                    <div className="space-y-3">
+                      {getLeaderboardData().map((user: any, index: number) => (
+                        <div
+                          key={user.name}
+                          className={`cyber-panel p-6 transition-all duration-300 hover:border-cyan-400/50 ${
+                            user.name === userName ? "border-cyan-400 bg-cyan-400/5" : ""
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div
+                                className={`w-12 h-12 rounded border-2 flex items-center justify-center font-bold text-lg font-mono ${
+                                  index === 0
+                                    ? "border-yellow-400 text-yellow-400 bg-yellow-400/10 cyber-glow"
+                                    : index === 1
+                                      ? "border-gray-400 text-gray-400 bg-gray-400/10"
+                                      : index === 2
+                                        ? "border-amber-600 text-amber-600 bg-amber-600/10"
+                                        : "border-gray-600 text-gray-400 bg-gray-600/10"
+                                }`}
+                              >
+                                #{index + 1}
+                              </div>
+                              <div>
+                                <div className="font-bold text-lg text-white font-mono">{user.name}</div>
+                                <div className="text-sm text-gray-400 font-mono">
+                                  LAST_SYNC: {new Date(user.lastUpdated).toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="grid grid-cols-3 gap-6 text-sm">
+                                <div className="text-center">
+                                  <div className="font-bold text-2xl text-green-400 font-mono cyber-glow">
+                                    {user.correctAnswers}
+                                  </div>
+                                  <div className="text-gray-400 font-mono text-xs">CORRECT</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="font-bold text-2xl text-cyan-400 font-mono cyber-glow">
+                                    {user.questionsAnswered}
+                                  </div>
+                                  <div className="text-gray-400 font-mono text-xs">TOTAL</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="font-bold text-2xl text-purple-400 font-mono cyber-glow">
+                                    {user.accuracyRate}%
+                                  </div>
+                                  <div className="text-gray-400 font-mono text-xs">ACCURACY</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {getLeaderboardData().length === 0 && (
+                        <div className="text-center py-12 text-gray-400">
+                          <Trophy className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                          <div className="text-lg font-mono">NO_DATA_RECORDED</div>
+                          <div className="font-mono text-sm">COMPLETE_QUERIES_TO_ENTER_RANKINGS</div>
                         </div>
                       )}
-
-                      {(geminiResponse?.explanation || currentQuestion.explanation) && (
-                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <p className="text-sm font-medium text-blue-800 mb-1">Explanation:</p>
-                          <p className="text-sm text-blue-700" style={{ whiteSpace: "pre-wrap" }}>
-                            {geminiResponse?.explanation || currentQuestion.explanation}
-                          </p>
-                        </div>
-                      )}
-                      {/* END: MODIFIED SECTION */}
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Question Card */}
+          <Card className="cyber-card">
+            <CardHeader className="pb-6">
+              <div className="flex items-center justify-between mb-4">
+                <Badge className="cyber-badge gap-2 px-4 py-2">
+                  {getQuestionTypeIcon(currentQuestion.type)}
+                  <span className="font-mono">{getQuestionTypeLabel(currentQuestion.type)}</span>
+                </Badge>
+                <div className="cyber-panel px-4 py-2">
+                  <span className="text-sm text-gray-400 font-mono">QUERY_{score.total + 1}</span>
                 </div>
-
-                {showFeedback && !isCorrect && currentQuestion.type === "short-answer" && (
-                  <Button
-                    onClick={handleMarkAsCorrect}
-                    variant="outline"
-                    className="w-full gap-2 border-green-200 text-green-700 hover:bg-green-50"
-                  >
-                    <Check className="h-4 w-4" />
-                    Mark as Correct
-                  </Button>
-                )}
-
-                <Button
-                  onClick={handleNextQuestion}
-                  className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  Next Question
-                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <CardTitle className="text-xl leading-relaxed text-white font-mono" style={{ whiteSpace: "pre-line" }}>
+                {currentQuestion.question}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-8">
+              {!showFeedback && (
+                <>
+                  {currentQuestion.type === "multiple-choice" || currentQuestion.type === "true-false" ? (
+                    <RadioGroup value={userAnswer} onValueChange={setUserAnswer} className="space-y-4">
+                      {(currentQuestion.options ?? ["True", "False"]).map((option, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-4 p-4 rounded-lg border border-gray-700 hover:border-cyan-400/50 transition-all duration-300 hover:bg-gray-800/50 cyber-option"
+                        >
+                          <RadioGroupItem
+                            value={option}
+                            id={`option-${index}`}
+                            className="border-gray-600 text-cyan-400"
+                          />
+                          <Label
+                            htmlFor={`option-${index}`}
+                            className="cursor-pointer flex-1 text-base font-mono text-gray-200"
+                          >
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  ) : (
+                    <div className="space-y-3">
+                      <Label htmlFor="answer-input" className="text-base font-mono text-cyan-400">
+                        INPUT_RESPONSE:
+                      </Label>
+                      <Textarea
+                        id="answer-input"
+                        placeholder="Enter your response here..."
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        className="cyber-input min-h-[140px] text-base resize-none font-mono"
+                      />
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleSubmitAnswer}
+                    disabled={!userAnswer.trim() || isCheckingAnswer}
+                    className="w-full h-14 text-lg font-mono cyber-button-primary"
+                  >
+                    {isCheckingAnswer ? (
+                      <>
+                        <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+                        PROCESSING...
+                      </>
+                    ) : (
+                      <>EXECUTE_QUERY</>
+                    )}
+                  </Button>
+                </>
+              )}
+
+              {showFeedback && (
+                <div className="space-y-8">
+                  <div
+                    className={`p-8 rounded-lg border-2 ${
+                      isCorrect
+                        ? "bg-green-900/20 border-green-400 cyber-success"
+                        : "bg-red-900/20 border-red-400 cyber-error"
+                    }`}
+                  >
+                    <div className="flex items-start gap-6">
+                      {isCorrect ? (
+                        <div className="relative">
+                          <CheckCircle className="h-8 w-8 text-green-400 flex-shrink-0 mt-1 cyber-glow animate-pulse" />
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <XCircle className="h-8 w-8 text-red-400 flex-shrink-0 mt-1 cyber-glow animate-pulse" />
+                        </div>
+                      )}
+                      <div className="flex-1 space-y-4">
+                        <div>
+                          <p
+                            className={`font-bold text-xl font-mono ${isCorrect ? "text-green-400" : "text-red-400"} cyber-glow`}
+                          >
+                            {isCorrect ? "QUERY_SUCCESSFUL" : "QUERY_FAILED"}
+                          </p>
+                          <p className={`text-sm mt-2 font-mono ${isCorrect ? "text-green-300" : "text-red-300"}`}>
+                            <span className="text-gray-400">INPUT: </span>
+                            {userAnswer}
+                          </p>
+                        </div>
+
+                        {!isCorrect && (
+                          <div className="cyber-panel p-4">
+                            <p className="text-sm font-mono text-green-400 mb-2">EXPECTED_OUTPUT:</p>
+                            <p className="text-sm text-green-300 font-mono">
+                              {geminiResponse?.correctAnswer
+                                ? geminiResponse.correctAnswer
+                                : currentQuestion.type === "short-answer"
+                                  ? Array.isArray(currentQuestion.correctAnswer)
+                                    ? currentQuestion.correctAnswer[0]
+                                    : currentQuestion.correctAnswer
+                                  : currentQuestion.correctAnswer}
+                            </p>
+                          </div>
+                        )}
+
+                        {(geminiResponse?.explanation || currentQuestion.explanation) && (
+                          <div className="cyber-panel p-4 border-cyan-400/30">
+                            <p className="text-sm font-mono text-cyan-400 mb-2">EXPLANATION:</p>
+                            <p className="text-sm text-cyan-300 font-mono" style={{ whiteSpace: "pre-wrap" }}>
+                              {geminiResponse?.explanation || currentQuestion.explanation}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {showFeedback && !isCorrect && currentQuestion.type === "short-answer" && (
+                    <Button
+                      onClick={handleMarkAsCorrect}
+                      variant="outline"
+                      className="w-full gap-3 h-12 cyber-button border-green-400/50 text-green-400 hover:bg-green-400/10"
+                    >
+                      <Check className="h-5 w-5" />
+                      <span className="font-mono">OVERRIDE_VALIDATION</span>
+                    </Button>
+                  )}
+
+                  <Button onClick={handleNextQuestion} className="w-full h-14 text-lg font-mono cyber-button-primary">
+                    NEXT_QUERY
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
