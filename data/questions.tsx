@@ -871,5 +871,19 @@ export const questions = [
     ],
     correctAnswer: "The new operator is used to create an object.",
   },
+  {
+  type: "short-answer",
+  question: "What character ends and closes a list index?",
+  correctAnswer: [
+    "]",
+    "closing square bracket",
+    "right square bracket"
+  ]
+  },
+  {
+    type: "true-false",
+    question: "parseInt() is used to convert an int to a string.",
+    correctAnswer: "False"
+  }
   // You can add here additional String processing and array questions from list 2 as needed.
 ];
