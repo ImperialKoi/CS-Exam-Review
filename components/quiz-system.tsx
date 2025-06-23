@@ -110,6 +110,95 @@ export default function QuizSystem() {
     loadNewQuestion()
   }, [])
 
+  useEffect(() => {
+    // Add global function to window for console access
+    ;(window as any).addCustomScore = (name: string, correct: number, total: number) => {
+      if (!name || typeof correct !== "number" || typeof total !== "number") {
+        console.error('Usage: addCustomScore("PlayerName", correctAnswers, totalQuestions)')
+        console.error('Example: addCustomScore("Alice", 25, 30)')
+        return
+      }
+
+      if (correct < 0 || total < 0 || correct > total) {
+        console.error("Invalid scores: correct answers cannot be negative or greater than total questions")
+        return
+      }
+
+      const stats = {
+        name,
+        questionsAnswered: total,
+        correctAnswers: correct,
+        accuracyRate: total > 0 ? Math.round((correct / total) * 100) : 0,
+        lastUpdated: new Date().toISOString(),
+      }
+
+      const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+      const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
+
+      if (existingUserIndex >= 0) {
+        // Update existing user
+        existingStats[existingUserIndex] = {
+          ...existingStats[existingUserIndex],
+          questionsAnswered: total,
+          correctAnswers: correct,
+          accuracyRate: stats.accuracyRate,
+          lastUpdated: stats.lastUpdated,
+        }
+        console.log(`✅ Updated ${name}'s stats: ${correct}/${total} (${stats.accuracyRate}%)`)
+      } else {
+        // Add new user
+        existingStats.push(stats)
+        console.log(`✅ Added ${name} to leaderboard: ${correct}/${total} (${stats.accuracyRate}%)`)
+      }
+
+      localStorage.setItem("csQuizLeaderboard", JSON.stringify(existingStats))
+
+      // If this is the current user, update their displayed score
+      if (name === userName && isNameSet) {
+        setScore({ correct, total })
+      }
+    }
+
+    // Add helper function to view current leaderboard
+    ;(window as any).viewLeaderboard = () => {
+      const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+      const sortedStats = stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
+
+      console.log("📊 Current Leaderboard:")
+      console.table(
+        sortedStats.map((user: any, index: number) => ({
+          Rank: index + 1,
+          Name: user.name,
+          Correct: user.correctAnswers,
+          Total: user.questionsAnswered,
+          Accuracy: `${user.accuracyRate}%`,
+          "Last Updated": new Date(user.lastUpdated).toLocaleDateString(),
+        })),
+      )
+    }
+
+    // Add function to clear leaderboard
+    ;(window as any).clearLeaderboard = () => {
+      localStorage.removeItem("csQuizLeaderboard")
+      console.log("🗑️ Leaderboard cleared!")
+      setScore({ correct: 0, total: 0 })
+    }
+
+    // Show available console commands
+    console.log("🎮 CS Exam Review Console Commands:")
+    console.log('• addCustomScore("Name", correct, total) - Add/update user scores')
+    console.log("• viewLeaderboard() - View current leaderboard")
+    console.log("• clearLeaderboard() - Clear all leaderboard data")
+    console.log('Example: addCustomScore("TestUser", 45, 50)')
+
+    // Cleanup function
+    return () => {
+      delete (window as any).addCustomScore
+      delete (window as any).viewLeaderboard
+      delete (window as any).clearLeaderboard
+    }
+  }, [userName, isNameSet])
+
   const checkShortAnswer = (userAnswer: string, correctAnswers: string[] | string): boolean => {
     if (!Array.isArray(correctAnswers)) {
       correctAnswers = Array.of(correctAnswers)
