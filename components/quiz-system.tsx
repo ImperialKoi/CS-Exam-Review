@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, XCircle, RotateCcw, BookOpen, Trophy, Target, Check, Loader2 } from "lucide-react"
+import { CheckCircle, XCircle, RotateCcw, BookOpen, Trophy, Target, Check, Loader2, X } from "lucide-react"
 import { type Question, questions } from "../data/questions"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
 
 interface GeminiResponse {
   isCorrect: boolean
@@ -26,6 +27,59 @@ export default function QuizSystem() {
   const [score, setScore] = useState({ correct: 0, total: 0 })
   const [isCheckingAnswer, setIsCheckingAnswer] = useState(false)
   const [geminiResponse, setGeminiResponse] = useState<GeminiResponse | null>(null)
+  const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [userName, setUserName] = useState("")
+  const [isNameSet, setIsNameSet] = useState(false)
+
+  const saveUserStats = (name: string, correct: number, total: number) => {
+    const stats = {
+      name,
+      questionsAnswered: total,
+      correctAnswers: correct,
+      accuracyRate: total > 0 ? Math.round((correct / total) * 100) : 0,
+      lastUpdated: new Date().toISOString(),
+    }
+
+    const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+    const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
+
+    if (existingUserIndex >= 0) {
+      // Update existing user stats by accumulating
+      const existingUser = existingStats[existingUserIndex]
+      existingStats[existingUserIndex] = {
+        ...existingUser,
+        questionsAnswered: existingUser.questionsAnswered + 1, // Increment by 1 for this question
+        correctAnswers: existingUser.correctAnswers + (correct > score.correct ? 1 : 0), // Increment by 1 if this answer was correct
+        accuracyRate: Math.round(
+          ((existingUser.correctAnswers + (correct > score.correct ? 1 : 0)) / (existingUser.questionsAnswered + 1)) *
+            100,
+        ),
+        lastUpdated: new Date().toISOString(),
+      }
+    } else {
+      // Add new user
+      existingStats.push(stats)
+    }
+
+    localStorage.setItem("csQuizLeaderboard", JSON.stringify(existingStats))
+  }
+
+  const getLeaderboardData = () => {
+    const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+    return stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
+  }
+
+  const loadUserStats = (name: string) => {
+    const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+    const existingUser = existingStats.find((user: any) => user.name === name)
+
+    if (existingUser) {
+      setScore({
+        correct: existingUser.correctAnswers,
+        total: existingUser.questionsAnswered,
+      })
+    }
+  }
 
   const getRandomQuestion = () => {
     const availableQuestions = questions.filter((q) => !usedQuestions.has(q.question))
@@ -56,6 +110,95 @@ export default function QuizSystem() {
     loadNewQuestion()
   }, [])
 
+  useEffect(() => {
+    // Add global function to window for console access
+    ;(window as any).addCustomScore = (name: string, correct: number, total: number) => {
+      if (!name || typeof correct !== "number" || typeof total !== "number") {
+        console.error('Usage: addCustomScore("PlayerName", correctAnswers, totalQuestions)')
+        console.error('Example: addCustomScore("Alice", 25, 30)')
+        return
+      }
+
+      if (correct < 0 || total < 0 || correct > total) {
+        console.error("Invalid scores: correct answers cannot be negative or greater than total questions")
+        return
+      }
+
+      const stats = {
+        name,
+        questionsAnswered: total,
+        correctAnswers: correct,
+        accuracyRate: total > 0 ? Math.round((correct / total) * 100) : 0,
+        lastUpdated: new Date().toISOString(),
+      }
+
+      const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+      const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
+
+      if (existingUserIndex >= 0) {
+        // Update existing user
+        existingStats[existingUserIndex] = {
+          ...existingStats[existingUserIndex],
+          questionsAnswered: total,
+          correctAnswers: correct,
+          accuracyRate: stats.accuracyRate,
+          lastUpdated: stats.lastUpdated,
+        }
+        console.log(`✅ Updated ${name}'s stats: ${correct}/${total} (${stats.accuracyRate}%)`)
+      } else {
+        // Add new user
+        existingStats.push(stats)
+        console.log(`✅ Added ${name} to leaderboard: ${correct}/${total} (${stats.accuracyRate}%)`)
+      }
+
+      localStorage.setItem("csQuizLeaderboard", JSON.stringify(existingStats))
+
+      // If this is the current user, update their displayed score
+      if (name === userName && isNameSet) {
+        setScore({ correct, total })
+      }
+    }
+
+    // Add helper function to view current leaderboard
+    ;(window as any).viewLeaderboard = () => {
+      const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+      const sortedStats = stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
+
+      console.log("📊 Current Leaderboard:")
+      console.table(
+        sortedStats.map((user: any, index: number) => ({
+          Rank: index + 1,
+          Name: user.name,
+          Correct: user.correctAnswers,
+          Total: user.questionsAnswered,
+          Accuracy: `${user.accuracyRate}%`,
+          "Last Updated": new Date(user.lastUpdated).toLocaleDateString(),
+        })),
+      )
+    }
+
+    // Add function to clear leaderboard
+    ;(window as any).clearLeaderboard = () => {
+      localStorage.removeItem("csQuizLeaderboard")
+      console.log("🗑️ Leaderboard cleared!")
+      setScore({ correct: 0, total: 0 })
+    }
+
+    // Show available console commands
+    console.log("🎮 CS Exam Review Console Commands:")
+    console.log('• addCustomScore("Name", correct, total) - Add/update user scores')
+    console.log("• viewLeaderboard() - View current leaderboard")
+    console.log("• clearLeaderboard() - Clear all leaderboard data")
+    console.log('Example: addCustomScore("TestUser", 45, 50)')
+
+    // Cleanup function
+    return () => {
+      delete (window as any).addCustomScore
+      delete (window as any).viewLeaderboard
+      delete (window as any).clearLeaderboard
+    }
+  }, [userName, isNameSet])
+
   const checkShortAnswer = (userAnswer: string, correctAnswers: string[] | string): boolean => {
     if (!Array.isArray(correctAnswers)) {
       correctAnswers = Array.of(correctAnswers)
@@ -67,7 +210,11 @@ export default function QuizSystem() {
     )
   }
 
-  const checkWithGemini = async (question: string, userAnswer: string, correctAnswers: string[] | string): Promise<GeminiResponse> => {
+  const checkWithGemini = async (
+    question: string,
+    userAnswer: string,
+    correctAnswers: string[] | string,
+  ): Promise<GeminiResponse> => {
     if (!Array.isArray(correctAnswers)) {
       correctAnswers = Array.of(correctAnswers)
     }
@@ -108,7 +255,11 @@ export default function QuizSystem() {
     if (currentQuestion.type === "short-answer") {
       setIsCheckingAnswer(true)
       try {
-        geminiResult = await checkWithGemini(currentQuestion.question, userAnswer, )
+        geminiResult = await checkWithGemini(
+          currentQuestion.question,
+          userAnswer,
+          currentQuestion.correctAnswer as string[],
+        )
         correct = geminiResult.isCorrect
         setGeminiResponse(geminiResult)
       } catch (error) {
@@ -121,10 +272,16 @@ export default function QuizSystem() {
 
     setIsCorrect(correct)
     setShowFeedback(true)
-    setScore((prev) => ({
-      correct: prev.correct + (correct ? 1 : 0),
-      total: prev.total + 1,
-    }))
+    const newScore = {
+      correct: score.correct + (correct ? 1 : 0),
+      total: score.total + 1,
+    }
+    setScore(newScore)
+
+    // Save stats if user name is set
+    if (isNameSet && userName) {
+      saveUserStats(userName, newScore.correct, newScore.total)
+    }
   }
 
   const handleNextQuestion = () => {
@@ -209,6 +366,17 @@ export default function QuizSystem() {
             </h1>
           </div>
           <p className="text-gray-600 text-lg">Master your Java programming concepts</p>
+          {isNameSet && (
+            <div className="flex items-center justify-center gap-4 mt-4">
+              <div className="text-sm text-gray-600">
+                Welcome back, <span className="font-semibold">{userName}</span>!
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setShowLeaderboard(true)} className="gap-2">
+                <Trophy className="h-4 w-4" />
+                Leaderboard
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Score Card */}
@@ -238,6 +406,148 @@ export default function QuizSystem() {
           </CardContent>
         </Card>
 
+        {/* Name Input Dialog */}
+        {!isNameSet && (
+          <Card className="mb-6 border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-center">Welcome to CS Exam Review!</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center text-gray-600">Enter your name to track your progress on the leaderboard</div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter your name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" && userName.trim()) {
+                      setIsNameSet(true)
+                    }
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    setIsNameSet(true)
+                    loadUserStats(userName)
+                  }}
+                  disabled={!userName.trim()}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Start Quiz ✨
+                </Button>
+              </div>
+              <div className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setIsNameSet(true)
+                    setUserName("Anonymous")
+                    loadUserStats("Anonymous")
+                  }}
+                  className="text-slate-500 hover:text-slate-700 hover:bg-white/50"
+                >
+                  Continue as Guest 👤
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Leaderboard Modal */}
+        {showLeaderboard && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-6 w-6 text-yellow-500" />
+                    Leaderboard
+                  </CardTitle>
+                  <Button variant="ghost" size="sm" onClick={() => setShowLeaderboard(false)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="overflow-y-auto">
+                <div className="space-y-4">
+                  {/* Stats Legend */}
+                  <div className="bg-blue-50 p-3 rounded-lg text-sm">
+                    <div className="font-medium text-blue-800 mb-2">Ranking System:</div>
+                    <div className="text-blue-700 space-y-1">
+                      <div>
+                        • <strong>Primary:</strong> Most Correct Answers
+                      </div>
+                      <div>
+                        • <strong>Secondary:</strong> Highest Accuracy Rate
+                      </div>
+                      <div>
+                        • <strong>Tertiary:</strong> Most Questions Answered
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Leaderboard List */}
+                  <div className="space-y-2">
+                    {getLeaderboardData().map((user: any, index: number) => (
+                      <div
+                        key={user.name}
+                        className={`p-4 rounded-lg border-2 ${
+                          user.name === userName ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                                index === 0
+                                  ? "bg-yellow-500 text-white"
+                                  : index === 1
+                                    ? "bg-gray-400 text-white"
+                                    : index === 2
+                                      ? "bg-amber-600 text-white"
+                                      : "bg-gray-200 text-gray-700"
+                              }`}
+                            >
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-semibold">{user.name}</div>
+                              <div className="text-sm text-gray-500">
+                                Last active: {new Date(user.lastUpdated).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div className="text-center">
+                                <div className="font-bold text-green-600">{user.correctAnswers}</div>
+                                <div className="text-gray-500">Correct</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="font-bold text-blue-600">{user.questionsAnswered}</div>
+                                <div className="text-gray-500">Total</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="font-bold text-purple-600">{user.accuracyRate}%</div>
+                                <div className="text-gray-500">Accuracy</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {getLeaderboardData().length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        No stats recorded yet. Complete some questions to appear on the leaderboard!
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Question Card */}
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
           <CardHeader className="pb-4">
@@ -248,7 +558,9 @@ export default function QuizSystem() {
               </Badge>
               <div className="text-sm text-gray-500">Question {score.total + 1}</div>
             </div>
-            <CardTitle className="text-l leading-relaxed" style={{whiteSpace: "pre-line"}}>{currentQuestion.question}</CardTitle>
+            <CardTitle className="text-l leading-relaxed" style={{ whiteSpace: "pre-line" }}>
+              {currentQuestion.question}
+            </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-6">
