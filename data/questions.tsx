@@ -442,7 +442,7 @@ export const questions = [
     question:
       "int sum = 0; int n = 1;\nwhile (n < 5) {\n  sum += n * n;\n  n++;\n}\nWhat is the value of sum after the code fragment is executed?",
     options: ["0", "20", "30", "12"],
-    correctAnswer: "20",
+    correctAnswer: "30",
   },
   {
     type: "true-false",

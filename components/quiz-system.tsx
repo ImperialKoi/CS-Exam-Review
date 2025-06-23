@@ -67,7 +67,10 @@ export default function QuizSystem() {
     )
   }
 
-  const checkWithGemini = async (question: string, userAnswer: string): Promise<GeminiResponse> => {
+  const checkWithGemini = async (question: string, userAnswer: string, correctAnswers: string[] | string): Promise<GeminiResponse> => {
+    if (!Array.isArray(correctAnswers)) {
+      correctAnswers = Array.of(correctAnswers)
+    }
     try {
       const response = await fetch("/api/check-answer", {
         method: "POST",
@@ -77,6 +80,7 @@ export default function QuizSystem() {
         body: JSON.stringify({
           question,
           userAnswer,
+          correctAnswers,
         }),
       })
 
@@ -104,7 +108,7 @@ export default function QuizSystem() {
     if (currentQuestion.type === "short-answer") {
       setIsCheckingAnswer(true)
       try {
-        geminiResult = await checkWithGemini(currentQuestion.question, userAnswer)
+        geminiResult = await checkWithGemini(currentQuestion.question, userAnswer, )
         correct = geminiResult.isCorrect
         setGeminiResponse(geminiResult)
       } catch (error) {
@@ -244,7 +248,7 @@ export default function QuizSystem() {
               </Badge>
               <div className="text-sm text-gray-500">Question {score.total + 1}</div>
             </div>
-            <CardTitle className="text-xl leading-relaxed">{currentQuestion.question}</CardTitle>
+            <CardTitle className="text-l leading-relaxed" style={{whiteSpace: "pre-line"}}>{currentQuestion.question}</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -319,25 +323,31 @@ export default function QuizSystem() {
                         </p>
                       </div>
 
+                      {/* START: MODIFIED SECTION */}
                       {!isCorrect && (
                         <div className="p-3 bg-white/60 rounded-lg">
-                          <p className="text-sm font-medium text-green-800 mb-1">Correct answer:</p>
+                          <p className="text-sm font-medium text-green-800 mb-1">Suggested Answer:</p>
                           <p className="text-sm text-green-700">
-                            {currentQuestion.type === "short-answer"
-                              ? Array.isArray(currentQuestion.correctAnswer)
-                                ? currentQuestion.correctAnswer[0]
-                                : currentQuestion.correctAnswer
-                              : currentQuestion.correctAnswer}
+                            {geminiResponse?.correctAnswer // Use Gemini's answer if available
+                              ? geminiResponse.correctAnswer
+                              : currentQuestion.type === "short-answer" // Fallback to static answer
+                                ? Array.isArray(currentQuestion.correctAnswer)
+                                  ? currentQuestion.correctAnswer[0]
+                                  : currentQuestion.correctAnswer
+                                : currentQuestion.correctAnswer}
                           </p>
                         </div>
                       )}
 
-                      {currentQuestion.explanation && (
+                      {(geminiResponse?.explanation || currentQuestion.explanation) && (
                         <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                           <p className="text-sm font-medium text-blue-800 mb-1">Explanation:</p>
-                          <p className="text-sm text-blue-700">{currentQuestion.explanation}</p>
+                          <p className="text-sm text-blue-700" style={{ whiteSpace: "pre-wrap" }}>
+                            {geminiResponse?.explanation || currentQuestion.explanation}
+                          </p>
                         </div>
                       )}
+                      {/* END: MODIFIED SECTION */}
                     </div>
                   </div>
                 </div>
