@@ -44,19 +44,14 @@ export default function QuizSystem() {
     const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
 
     if (existingUserIndex >= 0) {
-      // Update existing user stats
+      // Update existing user stats by accumulating
+      const existingUser = existingStats[existingUserIndex]
       existingStats[existingUserIndex] = {
-        ...existingStats[existingUserIndex],
-        questionsAnswered:
-          existingStats[existingUserIndex].questionsAnswered +
-          (total - existingStats[existingUserIndex].questionsAnswered),
-        correctAnswers:
-          existingStats[existingUserIndex].correctAnswers + (correct - existingStats[existingUserIndex].correctAnswers),
+        ...existingUser,
+        questionsAnswered: existingUser.questionsAnswered + 1, // Increment by 1 for this question
+        correctAnswers: existingUser.correctAnswers + (correct > score.correct ? 1 : 0), // Increment by 1 if this answer was correct
         accuracyRate: Math.round(
-          ((existingStats[existingUserIndex].correctAnswers +
-            (correct - existingStats[existingUserIndex].correctAnswers)) /
-            (existingStats[existingUserIndex].questionsAnswered +
-              (total - existingStats[existingUserIndex].questionsAnswered))) *
+          ((existingUser.correctAnswers + (correct > score.correct ? 1 : 0)) / (existingUser.questionsAnswered + 1)) *
             100,
         ),
         lastUpdated: new Date().toISOString(),
@@ -72,6 +67,18 @@ export default function QuizSystem() {
   const getLeaderboardData = () => {
     const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
     return stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
+  }
+
+  const loadUserStats = (name: string) => {
+    const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
+    const existingUser = existingStats.find((user: any) => user.name === name)
+
+    if (existingUser) {
+      setScore({
+        correct: existingUser.correctAnswers,
+        total: existingUser.questionsAnswered,
+      })
+    }
   }
 
   const getRandomQuestion = () => {
@@ -329,8 +336,15 @@ export default function QuizSystem() {
                     }
                   }}
                 />
-                <Button onClick={() => setIsNameSet(true)} disabled={!userName.trim()}>
-                  Start Quiz
+                <Button
+                  onClick={() => {
+                    setIsNameSet(true)
+                    loadUserStats(userName)
+                  }}
+                  disabled={!userName.trim()}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Start Quiz ✨
                 </Button>
               </div>
               <div className="text-center">
@@ -339,9 +353,11 @@ export default function QuizSystem() {
                   onClick={() => {
                     setIsNameSet(true)
                     setUserName("Anonymous")
+                    loadUserStats("Anonymous")
                   }}
+                  className="text-slate-500 hover:text-slate-700 hover:bg-white/50"
                 >
-                  Continue as Guest
+                  Continue as Guest 👤
                 </Button>
               </div>
             </CardContent>
