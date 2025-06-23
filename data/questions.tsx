@@ -130,7 +130,7 @@ export const questions = [
   {
     type: "code",
     question: "Write a method that removes dashes from a social security number (\"ddd-dd-dddd\")",
-    correctAnswer: ["987654321"],
+    correctAnswer: ["public static String removeDashes(String num) { String newNum = num.replaceAll("-", ""); return newNum; }"],
   },
   {
     type: "code",
