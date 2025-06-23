@@ -594,7 +594,7 @@ export const questions = [
   {
     type: "short-answer",
     question: "Simplify the following expression by using what you know regarding boolean conditions and by removing as many parentheses as possible.\n! ( (x == 7) )",
-    correctAnswer: "x < 7",
+    correctAnswer: "x != 7",
     explanation: "Note: According to source, answer is 'x < 7', though logically 'x != 7' is equivalent.",
   },
   {
