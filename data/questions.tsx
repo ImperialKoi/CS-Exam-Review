@@ -57,7 +57,7 @@ export const questions = [
     correctAnswer: [
       "double sum = 0.0;",
       "sum = sum + i * i;",
-      "System.out.println(Math.round(sum / 1000));"
+      "System.out.println(Math.round(sum / 1000))"
     ],
   },
   {
