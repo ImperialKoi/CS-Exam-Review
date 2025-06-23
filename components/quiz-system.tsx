@@ -18,6 +18,15 @@ interface GeminiResponse {
   explanation?: string
 }
 
+interface LeaderboardUser {
+  _id?: string
+  name: string
+  questionsAnswered: number
+  correctAnswers: number
+  accuracyRate: number
+  lastUpdated: string
+}
+
 export default function QuizSystem() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
   const [userAnswer, setUserAnswer] = useState("")
@@ -30,54 +39,92 @@ export default function QuizSystem() {
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [userName, setUserName] = useState("")
   const [isNameSet, setIsNameSet] = useState(false)
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([])
+  const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false)
 
-  const saveUserStats = (name: string, correct: number, total: number) => {
-    const stats = {
-      name,
-      questionsAnswered: total,
-      correctAnswers: correct,
-      accuracyRate: total > 0 ? Math.round((correct / total) * 100) : 0,
-      lastUpdated: new Date().toISOString(),
-    }
-
-    const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
-    const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
-
-    if (existingUserIndex >= 0) {
-      // Update existing user stats by accumulating
-      const existingUser = existingStats[existingUserIndex]
-      existingStats[existingUserIndex] = {
-        ...existingUser,
-        questionsAnswered: existingUser.questionsAnswered + 1, // Increment by 1 for this question
-        correctAnswers: existingUser.correctAnswers + (correct > score.correct ? 1 : 0), // Increment by 1 if this answer was correct
-        accuracyRate: Math.round(
-          ((existingUser.correctAnswers + (correct > score.correct ? 1 : 0)) / (existingUser.questionsAnswered + 1)) *
-            100,
-        ),
-        lastUpdated: new Date().toISOString(),
+  // Fetch leaderboard data from MongoDB
+  const fetchLeaderboard = async () => {
+    try {
+      setIsLoadingLeaderboard(true)
+      const response = await fetch("/api/leaderboard")
+      if (response.ok) {
+        const data = await response.json()
+        setLeaderboardData(data)
       }
-    } else {
-      // Add new user
-      existingStats.push(stats)
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error)
+    } finally {
+      setIsLoadingLeaderboard(false)
     }
-
-    localStorage.setItem("csQuizLeaderboard", JSON.stringify(existingStats))
   }
 
-  const getLeaderboardData = () => {
-    const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
-    return stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
-  }
-
-  const loadUserStats = (name: string) => {
-    const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
-    const existingUser = existingStats.find((user: any) => user.name === name)
-
-    if (existingUser) {
-      setScore({
-        correct: existingUser.correctAnswers,
-        total: existingUser.questionsAnswered,
+  // Update user stats in MongoDB
+  const updateUserStats = async (name: string, isCorrect: boolean) => {
+    try {
+      const response = await fetch("/api/leaderboard/increment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, isCorrect }),
       })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.user) {
+          setScore({
+            correct: result.user.correctAnswers,
+            total: result.user.questionsAnswered,
+          })
+        }
+        // Refresh leaderboard
+        fetchLeaderboard()
+      }
+    } catch (error) {
+      console.error("Error updating user stats:", error)
+    }
+  }
+
+  // Mark question as correct in MongoDB
+  const markAsCorrectInDB = async (name: string) => {
+    try {
+      const response = await fetch("/api/leaderboard/mark-correct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.user) {
+          setScore({
+            correct: result.user.correctAnswers,
+            total: result.user.questionsAnswered,
+          })
+        }
+        // Refresh leaderboard
+        fetchLeaderboard()
+      }
+    } catch (error) {
+      console.error("Error marking as correct:", error)
+    }
+  }
+
+  // Load user stats from MongoDB
+  const loadUserStats = async (name: string) => {
+    try {
+      const response = await fetch("/api/leaderboard")
+      if (response.ok) {
+        const data = await response.json()
+        const existingUser = data.find((user: LeaderboardUser) => user.name === name)
+
+        if (existingUser) {
+          setScore({
+            correct: existingUser.correctAnswers,
+            total: existingUser.questionsAnswered,
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error loading user stats:", error)
     }
   }
 
@@ -108,11 +155,12 @@ export default function QuizSystem() {
 
   useEffect(() => {
     loadNewQuestion()
+    fetchLeaderboard()
   }, [])
 
   useEffect(() => {
     // Add global function to window for console access
-    ;(window as any).addCustomScore = (name: string, correct: number, total: number) => {
+    ;(window as any).addCustomScore = async (name: string, correct: number, total: number) => {
       if (!name || typeof correct !== "number" || typeof total !== "number") {
         console.error('Usage: addCustomScore("PlayerName", correctAnswers, totalQuestions)')
         console.error('Example: addCustomScore("Alice", 25, 30)')
@@ -124,71 +172,66 @@ export default function QuizSystem() {
         return
       }
 
-      const stats = {
-        name,
-        questionsAnswered: total,
-        correctAnswers: correct,
-        accuracyRate: total > 0 ? Math.round((correct / total) * 100) : 0,
-        lastUpdated: new Date().toISOString(),
-      }
+      try {
+        const response = await fetch("/api/leaderboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            correctAnswers: correct,
+            questionsAnswered: total,
+          }),
+        })
 
-      const existingStats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
-      const existingUserIndex = existingStats.findIndex((user: any) => user.name === name)
+        if (response.ok) {
+          console.log(`✅ Updated ${name}'s stats: ${correct}/${total} (${Math.round((correct / total) * 100)}%)`)
+          fetchLeaderboard()
 
-      if (existingUserIndex >= 0) {
-        // Update existing user
-        existingStats[existingUserIndex] = {
-          ...existingStats[existingUserIndex],
-          questionsAnswered: total,
-          correctAnswers: correct,
-          accuracyRate: stats.accuracyRate,
-          lastUpdated: stats.lastUpdated,
+          // If this is the current user, update their displayed score
+          if (name === userName && isNameSet) {
+            setScore({ correct, total })
+          }
+        } else {
+          console.error("Failed to update leaderboard")
         }
-        console.log(`✅ Updated ${name}'s stats: ${correct}/${total} (${stats.accuracyRate}%)`)
-      } else {
-        // Add new user
-        existingStats.push(stats)
-        console.log(`✅ Added ${name} to leaderboard: ${correct}/${total} (${stats.accuracyRate}%)`)
-      }
-
-      localStorage.setItem("csQuizLeaderboard", JSON.stringify(existingStats))
-
-      // If this is the current user, update their displayed score
-      if (name === userName && isNameSet) {
-        setScore({ correct, total })
+      } catch (error) {
+        console.error("Error updating leaderboard:", error)
       }
     }
 
     // Add helper function to view current leaderboard
-    ;(window as any).viewLeaderboard = () => {
-      const stats = JSON.parse(localStorage.getItem("csQuizLeaderboard") || "[]")
-      const sortedStats = stats.sort((a: any, b: any) => b.correctAnswers - a.correctAnswers)
-
-      console.log("📊 Current Leaderboard:")
-      console.table(
-        sortedStats.map((user: any, index: number) => ({
-          Rank: index + 1,
-          Name: user.name,
-          Correct: user.correctAnswers,
-          Total: user.questionsAnswered,
-          Accuracy: `${user.accuracyRate}%`,
-          "Last Updated": new Date(user.lastUpdated).toLocaleDateString(),
-        })),
-      )
+    ;(window as any).viewLeaderboard = async () => {
+      try {
+        const response = await fetch("/api/leaderboard")
+        if (response.ok) {
+          const data = await response.json()
+          console.log("📊 Current Leaderboard:")
+          console.table(
+            data.map((user: LeaderboardUser, index: number) => ({
+              Rank: index + 1,
+              Name: user.name,
+              Correct: user.correctAnswers,
+              Total: user.questionsAnswered,
+              Accuracy: `${user.accuracyRate}%`,
+              "Last Updated": new Date(user.lastUpdated).toLocaleDateString(),
+            })),
+          )
+        }
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error)
+      }
     }
 
-    // Add function to clear leaderboard
+    // Add function to clear leaderboard (this would need a new API endpoint)
     ;(window as any).clearLeaderboard = () => {
-      localStorage.removeItem("csQuizLeaderboard")
-      console.log("🗑️ Leaderboard cleared!")
-      setScore({ correct: 0, total: 0 })
+      console.log("⚠️ Clear leaderboard function not implemented for MongoDB version")
+      console.log("This would require database admin access")
     }
 
     // Show available console commands
-    console.log("🎮 CS Exam Review Console Commands:")
+    console.log("🎮 CS Exam Review Console Commands (MongoDB Version):")
     console.log('• addCustomScore("Name", correct, total) - Add/update user scores')
     console.log("• viewLeaderboard() - View current leaderboard")
-    console.log("• clearLeaderboard() - Clear all leaderboard data")
     console.log('Example: addCustomScore("TestUser", 45, 50)')
 
     // Cleanup function
@@ -272,15 +315,16 @@ export default function QuizSystem() {
 
     setIsCorrect(correct)
     setShowFeedback(true)
-    const newScore = {
-      correct: score.correct + (correct ? 1 : 0),
-      total: score.total + 1,
-    }
-    setScore(newScore)
 
-    // Save stats if user name is set
+    // Update stats in MongoDB if user name is set
     if (isNameSet && userName) {
-      saveUserStats(userName, newScore.correct, newScore.total)
+      await updateUserStats(userName, correct)
+    } else {
+      // Update local score if no user name
+      setScore((prev) => ({
+        correct: prev.correct + (correct ? 1 : 0),
+        total: prev.total + 1,
+      }))
     }
   }
 
@@ -294,13 +338,20 @@ export default function QuizSystem() {
     loadNewQuestion()
   }
 
-  const handleMarkAsCorrect = () => {
+  const handleMarkAsCorrect = async () => {
     if (showFeedback && !isCorrect && currentQuestion?.type === "short-answer") {
       setIsCorrect(true)
-      setScore((prev) => ({
-        correct: prev.correct + 1,
-        total: prev.total,
-      }))
+
+      // Update in MongoDB if user name is set
+      if (isNameSet && userName) {
+        await markAsCorrectInDB(userName)
+      } else {
+        // Update local score if no user name
+        setScore((prev) => ({
+          correct: prev.correct + 1,
+          total: prev.total,
+        }))
+      }
     }
   }
 
@@ -371,7 +422,15 @@ export default function QuizSystem() {
               <div className="text-sm text-gray-600">
                 Welcome back, <span className="font-semibold">{userName}</span>!
               </div>
-              <Button variant="outline" size="sm" onClick={() => setShowLeaderboard(true)} className="gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowLeaderboard(true)
+                  fetchLeaderboard()
+                }}
+                className="gap-2"
+              >
                 <Trophy className="h-4 w-4" />
                 Leaderboard
               </Button>
@@ -422,6 +481,7 @@ export default function QuizSystem() {
                   onKeyPress={(e) => {
                     if (e.key === "Enter" && userName.trim()) {
                       setIsNameSet(true)
+                      loadUserStats(userName)
                     }
                   }}
                 />
@@ -461,7 +521,7 @@ export default function QuizSystem() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Trophy className="h-6 w-6 text-yellow-500" />
-                    Leaderboard
+                    Leaderboard {isLoadingLeaderboard && <Loader2 className="h-4 w-4 animate-spin" />}
                   </CardTitle>
                   <Button variant="ghost" size="sm" onClick={() => setShowLeaderboard(false)}>
                     <X className="h-4 w-4" />
@@ -472,7 +532,7 @@ export default function QuizSystem() {
                 <div className="space-y-4">
                   {/* Stats Legend */}
                   <div className="bg-blue-50 p-3 rounded-lg text-sm">
-                    <div className="font-medium text-blue-800 mb-2">Ranking System:</div>
+                    <div className="font-medium text-blue-800 mb-2">Ranking System (Real-time MongoDB):</div>
                     <div className="text-blue-700 space-y-1">
                       <div>
                         • <strong>Primary:</strong> Most Correct Answers
@@ -488,7 +548,7 @@ export default function QuizSystem() {
 
                   {/* Leaderboard List */}
                   <div className="space-y-2">
-                    {getLeaderboardData().map((user: any, index: number) => (
+                    {leaderboardData.map((user: LeaderboardUser, index: number) => (
                       <div
                         key={user.name}
                         className={`p-4 rounded-lg border-2 ${
@@ -536,7 +596,7 @@ export default function QuizSystem() {
                         </div>
                       </div>
                     ))}
-                    {getLeaderboardData().length === 0 && (
+                    {leaderboardData.length === 0 && !isLoadingLeaderboard && (
                       <div className="text-center py-8 text-gray-500">
                         No stats recorded yet. Complete some questions to appear on the leaderboard!
                       </div>
@@ -635,14 +695,13 @@ export default function QuizSystem() {
                         </p>
                       </div>
 
-                      {/* START: MODIFIED SECTION */}
                       {!isCorrect && (
                         <div className="p-3 bg-white/60 rounded-lg">
                           <p className="text-sm font-medium text-green-800 mb-1">Suggested Answer:</p>
                           <p className="text-sm text-green-700">
-                            {geminiResponse?.correctAnswer // Use Gemini's answer if available
+                            {geminiResponse?.correctAnswer
                               ? geminiResponse.correctAnswer
-                              : currentQuestion.type === "short-answer" // Fallback to static answer
+                              : currentQuestion.type === "short-answer"
                                 ? Array.isArray(currentQuestion.correctAnswer)
                                   ? currentQuestion.correctAnswer[0]
                                   : currentQuestion.correctAnswer
@@ -659,7 +718,6 @@ export default function QuizSystem() {
                           </p>
                         </div>
                       )}
-                      {/* END: MODIFIED SECTION */}
                     </div>
                   </div>
                 </div>
