@@ -15,6 +15,667 @@ export const questions = [
   },
   {
     type: "true-false",
+    question: "In Java programs, the name of all methods and fields usually begin with a capital letter.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "The /** and */ marks surrounding a comment must appear on the same line.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "Each line in a Java program ends with a semicolon.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "The Java compiler recognizes nested blocks through indentation.",
+    correctAnswer: "False",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following operators does not apply to a boolean variable?",
+    options: ["==", ">=", "!=", "||"],
+    correctAnswer: ">=",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following is NOT a relational operator?",
+    options: [">=", "/=", "!=", "<="],
+    correctAnswer: "/=",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following expressions is equivalent to !(a || !b)?",
+    options: ["!a && !b", "!a || b", "a || !b", "!a && b", "a && !b"],
+    correctAnswer: "!a && b",
+  },
+  {
+    type: "short-answer",
+    question: "Fix the syntax errors in the following code:",
+    correctAnswer: [
+      "double sum = 0.0;",
+      "sum = sum + i * i;",
+      "System.out.println(Math.round(sum / 1000));"
+    ],
+  },
+  {
+    type: "true-false",
+    question: "true and false are Java reserved words.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "The result of a relational operator has the boolean type.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "When using an if control block, you must always include an else condition.",
+    correctAnswer: "False",
+  },
+  {
+    type: "short-answer",
+    question: "What are the possible values of a boolean variable?",
+    correctAnswer: ["true", "false"],
+  },
+  {
+    type: "short-answer",
+    question: "Simplify: (!(x == 7) && !(x > 7))",
+    correctAnswer: ["x < 7"],
+  },
+  {
+    type: "short-answer",
+    question: "Can you have an if statement without an else?",
+    correctAnswer: ["Yes", "Yes."],
+  },
+  {
+    type: "multiple-choice",
+    question: "The missing semicolon at the end of Line 6 is an example of",
+    options: ["Style", "Syntax"],
+    correctAnswer: "Syntax",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the purpose of indentation in Java programs?",
+    options: [
+      "To indicate nested blocks for the debugger.",
+      "To mark compound statements for the compiler.",
+      "To make the code more readable.",
+      "To mark nested loops for the compiler."
+    ],
+    correctAnswer: "To make the code more readable.",
+  },
+  {
+    type: "multiple-choice",
+    question: "Another name for a reserved word is",
+    options: ["comment", "constructor", "keyword", "syntax"],
+    correctAnswer: "keyword",
+  },
+  {
+    type: "multiple-choice",
+    question: "A statement that tells the compiler where to look for other classes used by this class.",
+    options: ["import", "field", "constructor", "method"],
+    correctAnswer: "import",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following is not the proper syntax for a method name in Java?",
+    options: ["All of these are valid method names.", "min-value", "appleOrBanana", "test7"],
+    correctAnswer: "min-value",
+  },
+
+  // --- STRING MANIPULATION & METHODS ---
+  {
+    type: "code",
+    question: "Write a method that removes dashes from a social security number (\"ddd-dd-dddd\")",
+    correctAnswer: ["987654321"],
+  },
+  {
+    type: "code",
+    question: "Return true if both strings are not empty and end with the same character.",
+    correctAnswer: ["return (!s1.equals(\"\") && !s2.equals(\"\") && s1.charAt(s1.length() - 1) == s2.charAt(s2.length() - 1));"],
+  },
+  {
+    type: "code",
+    question: "Return true if the string is not empty and ends with a star (*).",
+    correctAnswer: ["return (!input.equals(\"\") && input.charAt(input.length() - 1) == '*');"],
+  },
+  {
+    type: "true-false",
+    question: "The Character class contains the static method boolean isLetterOrDigit(char ch).",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "A string, once constructed, cannot be changed.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "You can call a literal string's methods, as in 'Hello'.equals(str).",
+    correctAnswer: "True",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which method returns the position of the first occurrence of '*' in a String called stars?",
+    options: ["stars.indexOf('*');", "\"*\".indexIn(stars);", "stars.charAt('*');", "\"*\".findIn(stars);"],
+    correctAnswer: "stars.indexOf('*');",
+  },
+  {
+    type: "multiple-choice",
+    question: "If s is a String, what does s.substring(5) do?",
+    options: [
+      "Returns the end of s, starting from the sixth character.",
+      "Returns a substring made of the first 5 characters of s.",
+      "Nothing, s does not have such a method.",
+      "Returns a substring made of one character - the sixth character."
+    ],
+    correctAnswer: "Returns the end of s, starting from the sixth character.",
+  },
+  {
+    type: "true-false",
+    question: "The length method returns 0 for an empty string.",
+    correctAnswer: "True",
+  },
+  {
+    type: "multiple-choice",
+    question: "What string is returned by str.substring(2,3) if str = 'ABCDE'?",
+    options: ["BCD", "CDE", "BC", "C"],
+    correctAnswer: "C",
+  },
+  {
+    type: "true-false",
+    question: "An empty string is represented either as \"\" or as a null reference.",
+    correctAnswer: "False",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the output of this code segment: String str1 = 'A'; String str2 = str1; str2 += 'B'; System.out.println(str1 + str2);",
+    options: ["AAB", "ABAB", "AB", "BA"],
+    correctAnswer: "AAB",
+  },
+  {
+    type: "true-false",
+    question: "append is a method in the StringBuffer class.",
+    correctAnswer: "True",
+  },
+
+  // --- ALGORITHMS & LOOPS ---
+  {
+    type: "short-answer",
+    question: "Write pseudocode for an iterative algorithm that calculates the sum of 1/(i*i) for i from 1 to n.",
+    correctAnswer: ["input n", "sum <- 0", "i <- 1", "Repeat until i > n", "sum <- sum + 1/(i*i)", "i <- i + 1", "Output sum"],
+  },
+  {
+    type: "true-false",
+    question: "The same algorithm can be implemented in different programming languages.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "In nested loops, break in any of them passes control to the first statement after the outermost loop.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "An algorithm always takes one parameter n as input.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "If break is used inside the body of a loop (not a switch), it should be inside an if-else statement.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "An algorithm always produces one number as output.",
+    correctAnswer: "False",
+  },
+  {
+    type: "short-answer",
+    question: "What is a nested loop?",
+    correctAnswer: ["A loop placed inside another loop."],
+  },
+  {
+    type: "short-answer",
+    question: "Is return allowed in a loop?",
+    correctAnswer: ["Yes."],
+  },
+  {
+    type: "short-answer",
+    question: "Can you have nested while loops?",
+    correctAnswer: ["Yes."],
+  },
+  {
+    type: "short-answer",
+    question: "Can any code with a for loop be rewritten with a while loop?",
+    correctAnswer: ["Yes."],
+  },
+  {
+    type: "short-answer",
+    question: "Are method calls allowed in a condition in a while loop?",
+    correctAnswer: ["Yes."],
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the output of this code?",
+    options: ["1 4 9 16 25", "1 3 6 10 15 21 28 36 45", "1 2 3 4 5 6 7 8 9", "1 3 5 7 9"],
+    correctAnswer: "1 4 9 16 25",
+  },
+  {
+    type: "multiple-choice",
+    question: "What does countX(324) return?",
+    options: ["1", "4", "0", "2"],
+    correctAnswer: "4",
+  },
+  {
+    type: "multiple-choice",
+    question: "What happens when a return statement inside a for loop is executed?",
+    options: [
+      "The program immediately quits the current method.",
+      "The program quits the body of the loop and passes control to the first statement after the loop.",
+      "The program skips the remaining statements in the body of the loop, but executes the 'increment' statement and returns to the next iteration at the top of the loop.",
+      "The program quits the body of the loop and returns to the 'initialization' statement, then the first iteration."
+    ],
+    correctAnswer: "The program immediately quits the current method.",
+  },
+  {
+    type: "multiple-choice",
+    question: "What does countX(36) return?",
+    options: ["2", "1", "4", "0"],
+    correctAnswer: "2",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the value of z after the code fragment is executed?",
+    options: ["-0.2", "0.0", "-2.0", "-0.4"],
+    correctAnswer: "-2.0",
+  },
+  {
+    type: "short-answer",
+    question: "Explain what is happening in the flowchart, given initial values n = 31 and b = 3. What is the final result?",
+    correctAnswer: ["18"],
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following statements prints a backslash?",
+    options: [
+      "System.out.print(\\\\);",
+      "System.out.print(\"\\\\\");",
+      "System.out.print(\\bs);",
+      "System.out.print(\\);",
+    ],
+    correctAnswer: "System.out.print(\"\\\\\");",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following statements sets numDots to a random number between 1 and 6?",
+    options: [
+      "numDots = Math.randomInt(6) + 1;",
+      "numDots = (int)(6 * Math.random());",
+      "numDots = (int)(6 * Math.random() + 1);",
+      "numDots = Math.randomInt(6);",
+    ],
+    correctAnswer: "numDots = (int)(6 * Math.random() + 1);",
+  },
+  {
+    type: "multiple-choice",
+    question: 'What is the result when the following is executed?\nSystem.out.println("1" + 2 + 3);',
+    options: [
+      "ClassCastException",
+      'Syntax error "unexpected data type"',
+      "6 is displayed",
+      "123 is displayed",
+    ],
+    correctAnswer: "123 is displayed",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is displayed by:\nSystem.out.println(m % (n + 1) + n % (m + 1));\nGiven int n = 12, m = 4;",
+    options: ["112", "6", "1", "2.70769230769"],
+    correctAnswer: "6",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the value of x after the following code?\n```java\nint x = 1;\nswitch(x) {\n  case 1: x++; break;\n  case 2: x += 2; break;\n  default: x = 0; break;\n}\n```",
+    options: ["4", "2", "0", "1"],
+    correctAnswer: "2",
+  },
+  {
+    type: "short-answer",
+    question: "Can double expressions be used in a switch?",
+    correctAnswer: ["No"],
+  },
+  {
+    type: "short-answer",
+    question: "What is the output of System.out.print(13 % 5)?",
+    correctAnswer: ["3"],
+  },
+  {
+    type: "short-answer",
+    question: "What is the output of System.out.print(1.0 / 2 * 10)?",
+    correctAnswer: ["5.0"],
+  },
+  {
+    type: "short-answer",
+    question: "What is the output of System.out.print(1 / 2.0 * 10)?",
+    correctAnswer: ["5.0"],
+  },
+  {
+    type: "short-answer",
+    question: "What is the output of System.out.print(1 / 2 * 10)?",
+    correctAnswer: ["0"],
+  },
+  {
+    type: "short-answer",
+    question: "What is the value of gasMilage given:\nint miles = 98, gallons = 5;\ndouble gasMilage = miles / gallons;",
+    correctAnswer: ["19.0"],
+  },
+  {
+    type: "true-false",
+    question: "The % operator has the same rank as the / operator.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "double and float are two different names for the same Java data type.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "Casting a double to int rounds the value to the nearest integer.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "Literal strings are not objects of the String type.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "Literal strings are objects of the String type.",
+    correctAnswer: "True",
+  },
+
+  // --- CLASSES, OBJECTS, INHERITANCE ---
+
+  {
+    type: "short-answer",
+    question: "Where do we see the term 'void'?",
+    correctAnswer: [
+      "It is defined in a method header, used to define a method with no return.",
+      "It is found in the method header.",
+    ],
+  },
+  {
+    type: "short-answer",
+    question: "What is a 'constructor'?",
+    correctAnswer: [
+      "A constructor is a procedure for creating an object.",
+      "A portion of code that allows us to take input and/or set intended values for an object before it is actually created.",
+    ],
+  },
+  {
+    type: "short-answer",
+    question: "What is an 'object'?",
+    correctAnswer: [
+      "An object is an entity in a program that represents an object or a concept from the real world.",
+      "Something made using the blueprint of a class, which represents a 'physical' thing.",
+    ],
+  },
+  {
+    type: "short-answer",
+    question: "What does the word 'void' mean?",
+    correctAnswer: [
+      "No return for the method defined.",
+      "It means no value is returned.",
+    ],
+  },
+  {
+    type: "short-answer",
+    question: "Why is inheritance useful?",
+    correctAnswer: [
+      "It allows us to cast functionality of a superclass to a subclass. This relationship allows us to reuse code by building functionality for a new class on top of an existing class.",
+      "It is useful since we do not have to recreate code.",
+    ],
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following is false?",
+    options: [
+      "A subclass can define additional fields.",
+      "A method of an object can call methods of objects of a different class.",
+      "A method of an object can call other methods of the same object.",
+      "One of the public methods of every class should be called start.",
+    ],
+    correctAnswer: "One of the public methods of every class should be called start.",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which Student constructor call will compile without error?",
+    options: [
+      "Student s1 = new Student(16);",
+      "Student s1 = new Student(16, 'Amy');",
+      "Student s1 = new Student('Amy');",
+      "Student s1 = new Student('Amy', 16);",
+    ],
+    correctAnswer: "Student s1 = new Student('Amy', 16);",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following is a good reason for making fields of a class private?",
+    options: [
+      "Private fields are shared by all objects of the class.",
+      "The names and/or types of private fields in the class can be changed without changing other classes in the program.",
+      "Only constructors have access to private fields.",
+      "The class compiles faster.",
+    ],
+    correctAnswer: "The names and/or types of private fields in the class can be changed without changing other classes in the program.",
+  },
+  {
+    type: "true-false",
+    question: "When calling a method, the parameters passed must match the number, types, and order of parameters that the method expects.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "The name of the source file can not be the same as the name of the class.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "A local variable is neither public nor private.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "A class may have more than one constructor.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "When an object is created, the program always calls its init method.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "Fields must be declared at the top of the class to compile successfully.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "In the MorphingDice game, each Dice is an object.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "A subclass's methods have direct access to the private fields of the superclass.",
+    correctAnswer: "False",
+  },
+  {
+    type: "true-false",
+    question: "An object must be instantiated before it can be used.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "In the MorphingDice game, the Game class creates objects.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "Local variables in different methods of the same class can have the same name.",
+    correctAnswer: "True",
+  },
+  {
+    type: "true-false",
+    question: "Each variable must be declared on a separate line.",
+    correctAnswer: "False",
+  },
+
+  // --- HARDWARE, SOFTWARE, OOP, AND BINARY ---
+
+  {
+    type: "short-answer",
+    question: "What does DNS stand for?",
+    correctAnswer: ["Domain Name System"],
+  },
+  {
+    type: "short-answer",
+    question: "What is an output device?",
+    correctAnswer: [
+      "It is a device that takes information from the computer and displays or communicates it to the user or another device.",
+    ],
+  },
+  {
+    type: "short-answer",
+    question: "What does USB stand for?",
+    correctAnswer: ["Universal Serial Bus"],
+  },
+  {
+    type: "short-answer",
+    question: "What does ROM stand for?",
+    correctAnswer: ["Read Only Memory"],
+  },
+  {
+    type: "short-answer",
+    question: "Name four output devices.",
+    correctAnswer: ["Speaker", "Headphones", "Monitor", "Printer"],
+  },
+  {
+    type: "short-answer",
+    question: "What is software?",
+    correctAnswer: ["Software are the instructions that tell the computer what to do."],
+  },
+  {
+    type: "short-answer",
+    question: "Name four hardware parts.",
+    correctAnswer: ["CPU", "RAM", "ROM", "Motherboard", "Keyboard", "Mouse", "Monitor", "Hard drive"],
+  },
+  {
+    type: "short-answer",
+    question: "How do we end a statement in Java?",
+    correctAnswer: ["Using a semicolon", ";"],
+  },
+  {
+    type: "short-answer",
+    question: "What is an IDE?",
+    correctAnswer: ["Integrated Development Environment"],
+  },
+  {
+    type: "short-answer",
+    question: "What does OOP stand for?",
+    correctAnswer: ["Object Oriented Programming"],
+  },
+  {
+    type: "multiple-choice",
+    question: "Which principle is central to OOP?",
+    options: ["procedural programming", "inheritance", "top down programming", "block programming"],
+    correctAnswer: "inheritance",
+  },
+  {
+    type: "multiple-choice",
+    question: "OOP is especially helpful for:",
+    options: [
+      "Developing mission critical applications.",
+      "Improving software performance.",
+      "Coordinating team projects.",
+      "Facilitating training for software users.",
+    ],
+    correctAnswer: "Coordinating team projects",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is Scanner?",
+    options: [
+      "A library class that helps to read command line parameters in a program.",
+      "A module in the Java compiler that scans source code for syntax errors.",
+      "A module in the Java interpreter the scans the current directory for .class files.",
+      "A library class in the java.util package that helps read user input from the keyboard.",
+    ],
+    correctAnswer: "A library class in the java.util package that helps read user input from the keyboard.",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following is false about Bytecode?",
+    options: [
+      "It loads faster from the internet than source code.",
+      "It is platform dependent.",
+      "The interpreter is faster and smaller than it would be for Java source.",
+      "The source code is not revealed to end users.",
+    ],
+    correctAnswer: "It is platform dependent.",
+  },
+  {
+    type: "multiple-choice",
+    question: "One byte is:",
+    options: ["8 bits", "32 bits", "16 bits", "4 bits"],
+    correctAnswer: "8 bits",
+  },
+  {
+    type: "multiple-choice",
+    question: "An 'AND' gate is an example of where _____________ would be used.",
+    options: ["addition", "a byte", "Boolean logic", "multiplication"],
+    correctAnswer: "Boolean logic",
+  },
+  {
+    type: "multiple-choice",
+    question: "IP stands for:",
+    options: ["Internet Protocol", "Internet Programming", "Internal Programming", "Internal Protocol"],
+    correctAnswer: "Internet Protocol",
+  },
+  {
+    type: "multiple-choice",
+    question: "Which of the following statements is false?",
+    options: [
+      "A microprocessor CPU has millions of transistors etched into a silicon chip.",
+      "Several transistors may be combined to form a gate.",
+      "Several logical circuits may be combined to implement a software program.",
+      "Several gates may be combined to form a logical circuit.",
+    ],
+    correctAnswer: "Several logical circuits may be combined to implement a software program.",
+  },
+  {
+    type: "multiple-choice",
+    question: "How are spikes of electricity used in a computer to carry information?",
+    options: [
+      "256 different amplitudes of a spike represent the possible values of a byte.",
+      "A long spike represents 1 and a short spike represents 0.",
+      "The absence or presence of a spike represents 0 or 1, respectively.",
+      "A cluster of frequent spikes represents 1, and a cluster of infrequent spikes represents 0.",
+    ],
+    correctAnswer: "The absence or presence of a spike represents 0 or 1, respectively.",
+  },
+  {
+    type: "multiple-choice",
+    question: "What is the decimal number for 00101110?",
+    options: ["30", "44", "46", "116"],
+    correctAnswer: "46",
+  },
+  {
+    type: "true-false",
     question: "Local variables in different methods of the same class are allowed to have the same name.",
     correctAnswer: "True",
   },
